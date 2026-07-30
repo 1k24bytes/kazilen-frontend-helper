@@ -1,5 +1,7 @@
 'use client'
 
+import { Zap } from 'lucide-react'
+
 export default function PlansCard({
   price = 0,
   validityDays = 0,
@@ -7,36 +9,33 @@ export default function PlansCard({
   onRecharge
 }) {
   return (
-    <div className="mt-4">
+    <div className="space-y-2">
       {/* Title */}
-      <h3 className="text-lg font-semibold text-black mb-3">
-        Plans
+      <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+        Subscription Plan
       </h3>
 
       {/* Plan Card */}
-      <div className="bg-gray-100 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-white rounded-lg border border-zinc-200/80 p-5 shadow-2xs flex items-center justify-between gap-3">
         {/* Left Info */}
-        <div className="flex flex-col gap-1">
+        <div className="space-y-0.5">
           <div className="flex items-center gap-1">
-            <span className="text-xl font-bold text-black">
-                ₹{price || 0}
+            <span className="text-xl font-bold text-zinc-900 tracking-tight">
+              ₹{price || 0}
             </span>
           </div>
 
-          <p className="text-sm text-gray-600">
-            Order
-          </p>
-          <p className="text-sm font-semibold text-black">
-            {orderType}
+          <p className="text-xs text-zinc-500 font-medium">
+            Order Type: <span className="text-zinc-900 font-semibold">{orderType}</span>
           </p>
         </div>
 
         {/* Middle Info */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
+        <div className="text-center px-2">
+          <p className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider">
             Validity
           </p>
-          <p className="text-base font-semibold text-black">
+          <p className="text-xs font-bold text-zinc-900">
             {String(validityDays || 0).padStart(2, '0')} Days
           </p>
         </div>
@@ -44,9 +43,10 @@ export default function PlansCard({
         {/* Right Action */}
         <button
           onClick={onRecharge}
-          className="bg-blue-600 hover:bg-blue-700 transition text-white font-semibold px-5 py-2 rounded-full"
+          className="inline-flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium px-4 py-2 rounded-md shadow-xs transition cursor-pointer shrink-0"
         >
-          Recharge
+          <Zap size={14} />
+          <span>Recharge</span>
         </button>
       </div>
     </div>

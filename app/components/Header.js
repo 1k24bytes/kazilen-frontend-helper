@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
-export default function Header({ size = 40, imageSrc }) {
+export default function Header({ size = 36, imageSrc }) {
   const router = useRouter()
   const [online, setOnline] = useState(true)
-  const [initial, setInitial] = useState('•')
+  const [initial, setInitial] = useState('P')
 
   // Load online state from localStorage
   useEffect(() => {
@@ -31,82 +31,48 @@ export default function Header({ size = 40, imageSrc }) {
         setInitial(name.trim().charAt(0).toUpperCase())
       }
     } catch {
-      setInitial('•')
+      setInitial('P')
     }
   }, [])
 
   const toggle = () => setOnline((prev) => !prev)
   const openProfile = () => router.push('/profile')
 
-  // Toggle switch sizing
-  const pillWidth = 96
-  const pillHeight = 28
-  const knobSize = 22
-  const knobLeft = 3
-  const knobTranslate = pillWidth - knobSize - knobLeft * 2
-
   return (
-    <div className="flex items-center gap-4 w-full relative">
-      {/* Toggle */}
+    <header className="w-full flex items-center justify-between gap-4 py-2 border-b border-zinc-200/80 bg-white">
+      {/* Online / Offline Status Toggle Switch */}
       <button
         onClick={toggle}
         aria-pressed={online}
-        className="relative flex items-center rounded-full focus:outline-none select-none transition-colors duration-300"
-        style={{
-          width: pillWidth,
-          height: pillHeight,
-          background: online ? '#10B981' : '#E5E7EB',
-        }}
+        className={`relative inline-flex h-8 w-28 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+          online ? 'bg-emerald-600' : 'bg-zinc-200'
+        }`}
       >
-        {/* knob */}
+        <span className="sr-only">Toggle Online Status</span>
         <span
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 3,
-            left: knobLeft,
-            width: knobSize,
-            height: knobSize,
-            borderRadius: 9999,
-            background: '#fff',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-            transform: online
-              ? `translateX(${knobTranslate}px)`
-              : 'translateX(0px)',
-            transition: 'transform 240ms cubic-bezier(.2,.9,.2,1)',
-          }}
+          className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
+            online ? 'translate-x-[72px]' : 'translate-x-0'
+          }`}
         />
-
-        {/* text */}
-        <div
-          style={{
-            paddingLeft: knobLeft + knobSize + 8,
-            paddingRight: 10,
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-          }}
+        <span
+          className={`absolute inset-0 flex items-center justify-center text-[11px] font-semibold tracking-wider uppercase ${
+            online ? 'pr-6 text-white' : 'pl-6 text-zinc-700'
+          }`}
         >
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: online ? '#ffffff' : '#4B5563',
-              userSelect: 'none',
-            }}
-          >
-            {online ? 'Online' : 'Offline'}
-          </span>
-        </div>
+          {online ? 'Online' : 'Offline'}
+        </span>
       </button>
 
-      {/* Avatar moved to right */}
+      {/* Title & Brand */}
+      <div className="text-center flex-1">
+        <span className="text-sm font-bold text-zinc-900 tracking-tight">Kazilen</span>
+        <span className="text-[10px] text-zinc-400 block font-medium uppercase tracking-wider">Partner Console</span>
+      </div>
+
+      {/* Profile Avatar Button */}
       <button
         onClick={openProfile}
-        className="ml-auto relative rounded-full flex items-center justify-center font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-        style={{ width: size, height: size, fontSize: size / 2.5 }}
+        className="relative w-9 h-9 rounded-full bg-zinc-900 text-white font-semibold text-xs flex items-center justify-center shadow-2xs hover:bg-zinc-800 transition cursor-pointer shrink-0"
         title="Open profile"
         aria-label="Open profile"
       >
@@ -115,7 +81,7 @@ export default function Header({ size = 40, imageSrc }) {
             src={imageSrc} 
             alt="Profile" 
             fill 
-            className="object-cover"
+            className="object-cover rounded-full"
             sizes={`${size}px`}
           />
         ) : (
@@ -124,12 +90,11 @@ export default function Header({ size = 40, imageSrc }) {
 
         {/* status dot */}
         <span
-          className={`absolute right-1 bottom-1 rounded-full border-2 border-white transition-colors duration-300 ${
-            online ? 'bg-green-500' : 'bg-gray-400'
+          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+            online ? 'bg-emerald-500' : 'bg-zinc-400'
           }`}
-          style={{ width: 10, height: 10 }}
         />
       </button>
-    </div>
+    </header>
   )
 }

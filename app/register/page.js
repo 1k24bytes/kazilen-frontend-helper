@@ -28,7 +28,7 @@ function CreateAccountClient() {
       const payload = {
         phone_number: `91${phoneNo}`,
         full_name: name.trim(),
-        role: "worker", // role is worker
+        role: "worker",
       };
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
@@ -57,67 +57,70 @@ function CreateAccountClient() {
   };
 
   return (
-    <div className="min-h-screen px-6 py-8 flex flex-col items-center">
-      <div className="w-full max-w-sm">
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => router.back()} className="hover:opacity-70 transition-opacity">
-            <ArrowLeft size={28} />
+    <div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center px-4 py-8">
+      <div className="w-full max-w-sm bg-white rounded-lg border border-zinc-200/80 p-6 shadow-2xs space-y-5">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.back()}
+            className="w-8 h-8 rounded-md hover:bg-zinc-100 flex items-center justify-center text-zinc-600 transition cursor-pointer"
+          >
+            <ArrowLeft size={18} />
           </button>
-          <h1 className="text-2xl font-black uppercase tracking-tight">Worker Profile</h1>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-bold uppercase tracking-wider mb-2">
-            Phone Number
-          </label>
-          <div className="flex items-center border-2 border-gray-300 px-4 py-3 cursor-not-allowed opacity-70">
-            <span className="font-black mr-3">+91</span>
-            <input
-              type="tel"
-              value={phoneNo}
-              readOnly
-              className="w-full bg-transparent font-bold focus:outline-none cursor-not-allowed"
-            />
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-zinc-900">Partner Profile</h1>
+            <p className="text-xs text-zinc-500">Provide your full name for worker registration</p>
           </div>
-          {!/^\d{10}$/.test(phoneNo) && (
-            <p className="text-xs font-bold mt-2 uppercase">
-              Phone number missing. Go back.
-            </p>
-          )}
         </div>
 
-        <div className="mb-8">
-          <label className="block text-sm font-bold uppercase tracking-wider mb-2">
-            Full Name *
-          </label>
-          <div className={`border-2 px-4 py-3 transition-colors ${
-            touched.name && !name.trim() ? "border-red-500" : "border-foreground"
-          }`}>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1.5">
+              Phone Number
+            </label>
+            <div className="flex items-center bg-zinc-100 border border-zinc-200 rounded-md px-3 py-2.5 cursor-not-allowed">
+              <span className="text-zinc-500 text-xs font-medium mr-1.5">+91</span>
+              <input
+                type="tel"
+                value={phoneNo}
+                readOnly
+                className="w-full bg-transparent text-zinc-600 text-sm font-medium focus:outline-none cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1.5">
+              Full Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onBlur={() => setTouched((t) => ({ ...t, name: true }))}
-              placeholder="YOUR FULL NAME"
-              className="w-full bg-transparent font-bold text-lg focus:outline-none placeholder-gray-400"
+              placeholder="e.g. Ramesh Verma"
+              className={`w-full px-3 py-2.5 border rounded-md text-sm text-zinc-900 focus:outline-none transition ${
+                touched.name && !name.trim()
+                  ? "border-red-400 focus:ring-1 focus:ring-red-400"
+                  : "border-zinc-300 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+              }`}
             />
+            {touched.name && !name.trim() && (
+              <p className="text-xs text-red-500 mt-1 font-medium">Full name is required</p>
+            )}
           </div>
-          {touched.name && !name.trim() && (
-            <p className="text-xs text-red-500 font-bold mt-2 uppercase">Name is required</p>
-          )}
-        </div>
 
-        <button
-          onClick={handleCreateAccount}
-          disabled={!canSubmit || loading}
-          className={`w-full font-bold py-4 uppercase tracking-wider transition-all border-2 border-transparent ${
-            !canSubmit || loading
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300"
-              : "bg-foreground text-background hover:bg-background hover:text-foreground hover:border-foreground"
-          }`}
-        >
-          {loading ? "Creating..." : "Create Account"}
-        </button>
+          <button
+            onClick={handleCreateAccount}
+            disabled={!canSubmit || loading}
+            className={`w-full text-white font-medium py-2.5 rounded-md text-sm shadow-xs transition cursor-pointer ${
+              !canSubmit || loading
+                ? "bg-zinc-200 text-zinc-400 cursor-not-allowed"
+                : "bg-zinc-900 hover:bg-zinc-800"
+            }`}
+          >
+            {loading ? "Creating Profile…" : "Register Partner Profile"}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -125,7 +128,7 @@ function CreateAccountClient() {
 
 export default function CreateAccountPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-bold uppercase">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-zinc-50 flex items-center justify-center text-zinc-500 text-sm">Loading registration…</div>}>
       <CreateAccountClient />
     </Suspense>
   );

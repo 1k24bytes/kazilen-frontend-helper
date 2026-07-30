@@ -124,71 +124,75 @@ function VerifyOtpClient() {
 	};
 
 	return (
-		<div className="min-h-screen bg-white px-6 py-4">
-			<button onClick={handleBack} className="mb-4 text-black">
-				<ArrowLeft size={28} />
-			</button>
-
-			<h1 className="text-2xl font-bold mb-1 text-black">Verify OTP</h1>
-
-			<p className="text-sm text-gray-700 mb-6">
-				{phone ? (
-					<>
-						We sent an OTP to <span className="font-semibold text-black">{phone}</span>.
-					</>
-				) : (
-					"An OTP has been sent to your mobile."
-				)}{" "}
-				To resend OTP, please wait for {formatTime(seconds)}.
-			</p>
-
-			<div className="flex justify-between gap-2 mb-6">
-				{otpDigits.map((digit, idx) => (
-					<input
-						key={idx}
-						ref={(el) => (inputRefs.current[idx] = el)}
-						type="text"
-						inputMode="numeric"
-						maxLength={1}
-						value={digit}
-						onChange={(e) => handleChange(e.target.value, idx)}
-						onKeyDown={(e) => handleKeyDown(e, idx)}
-						className="w-12 h-12 border border-black rounded-md text-center text-lg font-semibold text-black focus:outline-none focus:ring-2 focus:ring-yellow-500"
-					/>
-				))}
-			</div>
-
-			<div className="flex justify-between items-center text-sm mt-2">
-				<span className="text-gray-700">
-					Did not get OTP?{" "}
+		<div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center px-4 py-8">
+			<div className="w-full max-w-sm bg-white rounded-lg border border-zinc-200/80 p-6 shadow-2xs space-y-5">
+				<div className="flex items-center gap-2">
 					<button
-						disabled={!resendEnabled || resending}
-						onClick={handleResend}
-						className={`font-medium ${resendEnabled ? "text-blue-600 underline" : "text-gray-400 cursor-not-allowed"
-							}`}
+						onClick={handleBack}
+						className="w-8 h-8 rounded-md hover:bg-zinc-100 flex items-center justify-center text-zinc-600 transition cursor-pointer"
 					>
-						{resending ? "Resending…" : "Resend"}
+						<ArrowLeft size={18} />
 					</button>
-				</span>
+					<div>
+						<h1 className="text-lg font-bold tracking-tight text-zinc-900">Partner Verification</h1>
+						<p className="text-xs text-zinc-500">
+							Sent to <span className="font-medium text-zinc-800">+91 {phone}</span>
+						</p>
+					</div>
+				</div>
 
-				<span className="font-mono text-black">{formatTime(seconds)}</span>
-			</div>
+				<div className="flex justify-between gap-1.5 py-2">
+					{otpDigits.map((digit, idx) => (
+						<input
+							key={idx}
+							ref={(el) => (inputRefs.current[idx] = el)}
+							type="text"
+							inputMode="numeric"
+							maxLength={1}
+							value={digit}
+							onChange={(e) => handleChange(e.target.value, idx)}
+							onKeyDown={(e) => handleKeyDown(e, idx)}
+							className="w-10 h-12 border border-zinc-300 rounded-md text-center text-base font-semibold text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+						/>
+					))}
+				</div>
 
-			<button
-				onClick={handleVerify}
-				disabled={loading}
-				className={`w-full mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-xl ${loading ? "opacity-70 cursor-not-allowed bg-gray-200" : "hover:bg-yellow-500"
+				<div className="flex justify-between items-center text-xs text-zinc-500 pt-1">
+					<span>
+						Didn't receive code?{" "}
+						<button
+							disabled={!resendEnabled || resending}
+							onClick={handleResend}
+							className={`font-semibold ${
+								resendEnabled ? "text-zinc-900 underline cursor-pointer" : "text-zinc-400 cursor-not-allowed"
+							}`}
+						>
+							{resending ? "Sending…" : "Resend"}
+						</button>
+					</span>
+
+					<span className="font-mono text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded text-[11px]">
+						{formatTime(seconds)}
+					</span>
+				</div>
+
+				<button
+					onClick={handleVerify}
+					disabled={loading}
+					className={`w-full text-white font-medium py-2.5 rounded-md text-sm shadow-xs transition cursor-pointer ${
+						loading ? "bg-zinc-200 text-zinc-400 cursor-not-allowed" : "bg-zinc-900 hover:bg-zinc-800"
 					}`}
-			>
-				{loading ? "Verifying…" : "Verify"}
-			</button>
+				>
+					{loading ? "Verifying Code…" : "Verify & Sign In"}
+				</button>
+			</div>
 		</div>
 	);
 }
 
 export default function VerifyOtpPage() {
 	return (
-		<Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center text-black">Loading...</div>}>
+		<Suspense fallback={<div className="min-h-screen bg-zinc-50 flex items-center justify-center text-zinc-500 text-sm">Loading verification…</div>}>
 			<VerifyOtpClient />
 		</Suspense>
 	);

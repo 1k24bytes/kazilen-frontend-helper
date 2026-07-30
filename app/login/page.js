@@ -53,62 +53,72 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col justify-center items-center px-6 bg-white relative">
-			<h1 className="text-3xl font-bold mb-2 text-black">Kazilen Worker</h1>
+		<div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center px-4 py-8">
+			<div className="w-full max-w-sm bg-white rounded-lg border border-zinc-200/80 p-6 shadow-2xs space-y-5">
+				<div className="text-center space-y-1">
+					<h1 className="text-2xl font-bold tracking-tight text-zinc-900">Kazilen Partner</h1>
+					<p className="text-xs text-zinc-500">Sign in to manage jobs and track daily earnings</p>
+				</div>
 
-			<div className="mt-4 w-full max-w-sm">
-				<p className="text-sm font-semibold text-black mb-4">
-					Worker Login <span className="text-gray-600">or Create Account</span>
-				</p>
+				<div className="space-y-4 pt-2">
+					<div>
+						<label className="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1.5">
+							Mobile Number
+						</label>
 
-				<label className="block text-sm text-black mb-1">
-					Enter mobile number
-				</label>
+						<div className="relative">
+							<span className="absolute left-3 top-2.5 text-sm font-medium text-zinc-400">
+								+91
+							</span>
+							<input
+								type="tel"
+								inputMode="numeric"
+								pattern="\d*"
+								placeholder="9876543210"
+								value={phone}
+								onChange={handlePhoneInput}
+								className="w-full pl-12 pr-4 py-2.5 border border-zinc-300 rounded-md focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 text-sm text-zinc-900 placeholder:text-zinc-400 transition"
+							/>
+						</div>
+					</div>
 
-				<input
-					type="tel"
-					inputMode="numeric"
-					pattern="\d*"
-					placeholder="9876543210"
-					value={phone}
-					onChange={handlePhoneInput}
-					className="w-full px-4 py-3 border border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm mb-4 text-black"
-				/>
-
-				<button
-					onClick={handleContinue}
-					disabled={loading || phone.length !== 10}
-					className={`w-full text-black font-semibold py-3 rounded-xl ${
-						loading || phone.length !== 10 ? "cursor-not-allowed opacity-70 bg-gray-200" : "bg-yellow-400 hover:bg-yellow-500"
-					} transition`}
-				>
-					{loading ? "Checking…" : "Continue"}
-				</button>
-			</div>
-
-			{/* Terms checkbox */}
-			<div className="flex items-start gap-2 mt-4 max-w-sm">
-				<input
-					type="checkbox"
-					id="terms"
-					checked={acceptedTerms}
-					onChange={(e) => setAcceptedTerms(e.target.checked)}
-					className="mt-1 h-4 w-4 accent-yellow-500 cursor-pointer"
-				/>
-
-				<label
-					htmlFor="terms"
-					className="text-[11px] text-gray-600 leading-snug"
-				>
-					I agree to the{" "}
 					<button
-						type="button"
-						onClick={() => setShowModal(true)}
-						className="text-blue-600 underline"
+						onClick={handleContinue}
+						disabled={loading || phone.length !== 10}
+						className={`w-full text-white font-medium py-2.5 rounded-md text-sm shadow-xs transition cursor-pointer ${
+							loading || phone.length !== 10
+								? "cursor-not-allowed bg-zinc-200 text-zinc-400"
+								: "bg-zinc-900 hover:bg-zinc-800"
+						}`}
 					>
-						Terms of Conditions.
+						{loading ? "Sending OTP…" : "Continue as Partner"}
 					</button>
-				</label>
+				</div>
+
+				{/* Terms checkbox */}
+				<div className="flex items-start gap-2 pt-2 border-t border-zinc-100">
+					<input
+						type="checkbox"
+						id="terms"
+						checked={acceptedTerms}
+						onChange={(e) => setAcceptedTerms(e.target.checked)}
+						className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 cursor-pointer accent-zinc-900"
+					/>
+
+					<label
+						htmlFor="terms"
+						className="text-[11px] text-zinc-500 leading-snug"
+					>
+						I agree to the Partner{" "}
+						<button
+							type="button"
+							onClick={() => setShowModal(true)}
+							className="text-zinc-900 underline font-medium hover:text-black cursor-pointer"
+						>
+							Terms of Conditions.
+						</button>
+					</label>
+				</div>
 			</div>
 
 			<TermsOfCondition open={showModal} onClose={() => setShowModal(false)} />

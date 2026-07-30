@@ -29,7 +29,6 @@ export default function WorkerDashboard() {
           const json = await response.json();
           setData(json);
         } else {
-          // Fallback if backend endpoint doesn't exist yet, instead of hardcoded values
           setData(getEmptyState());
         }
       } catch (err) {
@@ -52,33 +51,32 @@ export default function WorkerDashboard() {
   });
 
   if (loading) {
-    return <div className="min-h-screen bg-white flex justify-center items-center text-gray-500 font-medium">Loading Dashboard...</div>;
+    return (
+      <div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center text-zinc-500 text-sm font-medium">
+        <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin mb-3" />
+        Loading Dashboard…
+      </div>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-white pt-6">
-      <div className="w-full px-4">
-        {/* Header */}
-        <div style={{ width: 32 }} />
+    <main className="min-h-screen bg-zinc-50/50 text-zinc-900 pb-16">
+      <div className="max-w-xl mx-auto px-4 py-4 space-y-6">
+        {/* Header Bar */}
         <Header imageSrc={null} />
-        <div style={{ width: 32 }} />
-        
-        {/* Progress */}
-        <div className="mt-6">
-          <MyProgress progressData={data?.progress} />
-        </div>
 
-        {/* Order / Plan Info */}
-        <div className="mt-6">
-          <OrderPlanCard 
-            completed={data?.plan?.completed} 
-            totalLabel={data?.plan?.totalLabel}
-            price={data?.plan?.price}
-            timeLeft={data?.plan?.timeLeft}
-          />
-        </div>
+        {/* Progress Module */}
+        <MyProgress progressData={data?.progress} />
 
-        {/* Plans */}
+        {/* Order & Plan Overview */}
+        <OrderPlanCard 
+          completed={data?.plan?.completed} 
+          totalLabel={data?.plan?.totalLabel}
+          price={data?.plan?.price}
+          timeLeft={data?.plan?.timeLeft}
+        />
+
+        {/* Recharge Subscription Module */}
         <PlansCard 
           price={data?.recharge?.price}
           validityDays={data?.recharge?.validityDays}

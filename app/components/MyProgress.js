@@ -5,13 +5,6 @@ const PERIODS = [
   { key: 'week', label: 'This Week' }
 ]
 
-const BUTTON_CLASSES = {
-  active:
-    'bg-sky-500 text-white shadow-md ring-2 ring-sky-300 scale-105',
-  inactive:
-    'bg-sky-50 text-sky-700 hover:bg-sky-100'
-}
-
 export default function MyProgress({ progressData }) {
   const [period, setPeriod] = useState('today')
   const [isPending, startTransition] = useTransition()
@@ -30,19 +23,19 @@ export default function MyProgress({ progressData }) {
   }
 
   return (
-    <section className="w-full mx-auto space-y-4">
-      <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 p-5 transition-opacity duration-300 ${isPending ? 'opacity-60' : 'opacity-100'}`}>
+    <section className="w-full">
+      <div className={`bg-white rounded-lg border border-zinc-200/80 p-5 shadow-2xs transition-opacity duration-200 ${isPending ? 'opacity-60' : 'opacity-100'}`}>
         {/* Header */}
-        <header className="flex items-center justify-between mb-6">
+        <header className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+            <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
               My Progress
             </h3>
-            {isPending && <div className="w-3 h-3 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />}
+            {isPending && <div className="w-3 h-3 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />}
           </div>
 
           <div
-            className="flex items-center gap-2 bg-slate-50 p-1 rounded-full border border-slate-100"
+            className="inline-flex items-center p-0.5 bg-zinc-100 rounded-md border border-zinc-200/60"
             role="tablist"
             aria-label="Progress period"
           >
@@ -55,9 +48,11 @@ export default function MyProgress({ progressData }) {
                   onClick={() => handlePeriodChange(key)}
                   role="tab"
                   aria-selected={isActive}
-                  className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider
-                    transition-all duration-200 ease-out
-                    ${isActive ? BUTTON_CLASSES.active : BUTTON_CLASSES.inactive}`}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-zinc-900 text-white shadow-2xs'
+                      : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
                 >
                   {label}
                 </button>
@@ -66,16 +61,14 @@ export default function MyProgress({ progressData }) {
           </div>
         </header>
 
-        {/* Stats */}
-        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-inner">
-          <div className="flex items-stretch justify-around">
+        {/* Stats Grid */}
+        <div className="bg-zinc-50/70 rounded-md p-4 border border-zinc-200/60">
+          <div className="grid grid-cols-3 divide-x divide-zinc-200">
             <Stat
               label="Earnings"
               value={formatINRCurrency(current.earnings)}
             />
-            <Divider />
-            <Stat label="Time" value={current.hours} />
-            <Divider />
+            <Stat label="Hours Worked" value={current.hours} />
             <Stat label="Orders" value={current.orders} />
           </div>
         </div>
@@ -84,38 +77,24 @@ export default function MyProgress({ progressData }) {
   )
 }
 
-/* ---------- helpers ---------- */
-
 function formatINRCurrency(amount) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 0
   }).format(Number(amount || 0))
 }
 
-/* ---------- UI components ---------- */
-
 const Stat = memo(function Stat({ label, value }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center">
-      <div className="text-xl font-black text-slate-800 tracking-tight">
+    <div className="flex flex-col items-center justify-center px-2 text-center">
+      <div className="text-xl font-bold text-zinc-900 tracking-tight">
         {value}
       </div>
-      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+      <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mt-1">
         {label}
       </div>
     </div>
-  )
-})
-
-const Divider = memo(function Divider() {
-  return (
-    <div
-      className="w-px bg-slate-200 mx-2 self-stretch"
-      role="separator"
-      aria-hidden="true"
-    />
   )
 })
