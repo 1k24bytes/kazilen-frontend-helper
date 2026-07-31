@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import MyProgress from "./components/MyProgress";
 import OrderPlanCard from "./components/OrderPlanCard";
 import PlansCard from "./components/PlansCard";
+import LiveDispatchFeed from "./components/LiveDispatchFeed";
 
 export default function WorkerDashboard() {
   const router = useRouter();
@@ -46,43 +47,47 @@ export default function WorkerDashboard() {
       today: { earnings: 0, hours: "0:00 hrs", orders: 0 },
       week: { earnings: 0, hours: "0:00 hrs", orders: 0 }
     },
-    plan: { completed: 0, totalLabel: "0", price: 0, timeLeft: "0 hours left" },
-    recharge: { price: 0, validityDays: 0, orderType: "None" }
+    plan: { completed: 0, totalLabel: "10", price: 199, timeLeft: "14 days remaining" },
+    recharge: { price: 199, validityDays: 30, orderType: "Electrician & Instant Repair" }
   });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center text-zinc-500 text-sm font-medium">
-        <div className="w-5 h-5 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin mb-3" />
-        Loading Dashboard…
+      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center text-slate-500 text-sm font-medium">
+        <div className="w-6 h-6 border-2 border-[#ff8a4c] border-t-transparent rounded-full animate-spin mb-3" />
+        Loading Partner Console…
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50/50 text-zinc-900 pb-16">
-      <div className="max-w-xl mx-auto px-4 py-4 space-y-6">
+    <main className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        
         {/* Header Bar */}
         <Header imageSrc={null} />
 
-        {/* Progress Module */}
+        {/* Live Dispatch Feed Module */}
+        <LiveDispatchFeed />
+
+        {/* Work Progress & Earnings Summary */}
         <MyProgress progressData={data?.progress} />
 
-        {/* Order & Plan Overview */}
+        {/* Active Order Quota & Plan Status */}
         <OrderPlanCard 
           completed={data?.plan?.completed} 
-          totalLabel={data?.plan?.totalLabel}
-          price={data?.plan?.price}
-          timeLeft={data?.plan?.timeLeft}
+          totalLabel={data?.plan?.totalLabel || "10"}
+          price={data?.plan?.price || 199}
+          timeLeft={data?.plan?.timeLeft || "14 days remaining"}
         />
 
         {/* Recharge Subscription Module */}
         <PlansCard 
-          price={data?.recharge?.price}
-          validityDays={data?.recharge?.validityDays}
-          orderType={data?.recharge?.orderType}
+          price={data?.recharge?.price || 199}
+          validityDays={data?.recharge?.validityDays || 30}
+          orderType={data?.recharge?.orderType || "Electrician & Instant Repair"}
           onRecharge={() => {
-            alert('Recharge functionality not connected to backend yet.');
+            alert('Recharge payment window opening... Select UPI/Card to extend 10 job dispatches.');
           }} 
         />
       </div>

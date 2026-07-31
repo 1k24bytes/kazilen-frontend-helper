@@ -2,99 +2,76 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import { User, MapPin } from 'lucide-react'
 
-export default function Header({ size = 36, imageSrc }) {
+export default function Header() {
   const router = useRouter()
   const [online, setOnline] = useState(true)
-  const [initial, setInitial] = useState('P')
+  const [partnerName, setPartnerName] = useState('Partner')
 
-  // Load online state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('isOnline')
     if (saved !== null) setOnline(saved === 'true')
   }, [])
 
-  // Persist online state
   useEffect(() => {
     localStorage.setItem('isOnline', online ? 'true' : 'false')
   }, [online])
 
-  // Load professional name and extract first letter
   useEffect(() => {
     try {
       const name =
         localStorage.getItem('kazilen_professional_name') ||
         localStorage.getItem('professionalName') ||
         ''
-      if (name) {
-        setInitial(name.trim().charAt(0).toUpperCase())
-      }
-    } catch {
-      setInitial('P')
-    }
+      if (name) setPartnerName(name.trim())
+    } catch {}
   }, [])
 
   const toggle = () => setOnline((prev) => !prev)
-  const openProfile = () => router.push('/profile')
 
   return (
-    <header className="w-full flex items-center justify-between gap-4 py-2 border-b border-zinc-200/80 bg-white">
-      {/* Online / Offline Status Toggle Switch */}
-      <button
-        onClick={toggle}
-        aria-pressed={online}
-        className={`relative inline-flex h-8 w-28 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-          online ? 'bg-emerald-600' : 'bg-zinc-200'
-        }`}
-      >
-        <span className="sr-only">Toggle Online Status</span>
-        <span
-          className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
-            online ? 'translate-x-[72px]' : 'translate-x-0'
-          }`}
-        />
-        <span
-          className={`absolute inset-0 flex items-center justify-center text-[11px] font-semibold tracking-wider uppercase ${
-            online ? 'pr-6 text-white' : 'pl-6 text-zinc-700'
-          }`}
+    <header className="w-full bg-white rounded-xl border border-slate-200 px-4 py-3 shadow-2xs flex items-center justify-between gap-4">
+      {/* Brand & Status */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => router.push('/')}
+          className="text-base font-extrabold text-slate-900 hover:text-[#ff8a4c] transition"
         >
-          {online ? 'Online' : 'Offline'}
-        </span>
-      </button>
+          Kazilen Partner
+        </button>
 
-      {/* Title & Brand */}
-      <div className="text-center flex-1">
-        <span className="text-sm font-bold text-zinc-900 tracking-tight">Kazilen</span>
-        <span className="text-[10px] text-zinc-400 block font-medium uppercase tracking-wider">Partner Console</span>
+        <span className="h-4 w-px bg-slate-200" />
+
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+          <MapPin size={13} className="text-slate-400" />
+          <span>Nagpur, MH</span>
+        </div>
       </div>
 
-      {/* Profile Avatar Button */}
-      <button
-        onClick={openProfile}
-        className="relative w-9 h-9 rounded-full bg-zinc-900 text-white font-semibold text-xs flex items-center justify-center shadow-2xs hover:bg-zinc-800 transition cursor-pointer shrink-0"
-        title="Open profile"
-        aria-label="Open profile"
-      >
-        {imageSrc ? (
-          <Image 
-            src={imageSrc} 
-            alt="Profile" 
-            fill 
-            className="object-cover rounded-full"
-            sizes={`${size}px`}
-          />
-        ) : (
-          initial
-        )}
-
-        {/* status dot */}
-        <span
-          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
-            online ? 'bg-emerald-500' : 'bg-zinc-400'
+      {/* Online Switch & Profile */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggle}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
+            online
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-slate-100 text-slate-600 border-slate-200'
           }`}
-        />
-      </button>
+        >
+          <span className={`w-2 h-2 rounded-full ${online ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+          <span>{online ? 'ONLINE' : 'OFFLINE'}</span>
+        </button>
+
+        <button
+          onClick={() => router.push('/profile')}
+          className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center transition cursor-pointer hover:bg-slate-800 shrink-0"
+          aria-label="Profile"
+          title={partnerName}
+        >
+          <User size={15} />
+        </button>
+      </div>
     </header>
   )
 }

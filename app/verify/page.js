@@ -7,7 +7,8 @@ import { ArrowLeft } from "lucide-react";
 function VerifyOtpClient() {
 	const router = useRouter();
 	const params = useSearchParams();
-	const phone = params.get("phone");
+	const rawPhone = params.get("phone");
+	const phone = rawPhone ? rawPhone.replace(/\D/g, "") : "";
 
 	const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
 	const [seconds, setSeconds] = useState(30);
@@ -15,6 +16,12 @@ function VerifyOtpClient() {
 	const [loading, setLoading] = useState(false);
 	const [resending, setResending] = useState(false);
 	const inputRefs = useRef([]);
+
+	useEffect(() => {
+		if (phone && typeof window !== "undefined") {
+			localStorage.setItem("user_phone", phone);
+		}
+	}, [phone]);
 
 	const handleBack = () => router.back();
 
@@ -38,6 +45,7 @@ function VerifyOtpClient() {
 
 	const handleVerify = async () => {
 		const fullOtp = otpDigits.join("");
+		const cleanPhone = phone.replace(/\D/g, "");
 
 		if (fullOtp.length !== 6) {
 			alert("Enter a valid 6-digit OTP");
@@ -51,7 +59,7 @@ function VerifyOtpClient() {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					phone_number: `91${phone}`,
+					phone_number: `91${cleanPhone}`,
 					otp: fullOtp,
 					role: "worker"
 				}),
@@ -64,8 +72,12 @@ function VerifyOtpClient() {
 				return;
 			}
 
+			if (cleanPhone && typeof window !== "undefined") {
+				localStorage.setItem("user_phone", cleanPhone);
+			}
+
 			if (data.status === "needs_registration") {
-				router.push(`/register?phone=${encodeURIComponent(phone || "")}`);
+				router.push(`/register?phone=${encodeURIComponent(cleanPhone)}`);
 			} else if (data.status === "success" && data.access_token) {
 				localStorage.setItem("access_token", data.access_token);
 				router.push("/");
@@ -82,11 +94,12 @@ function VerifyOtpClient() {
 
 		try {
 			setResending(true);
+			const cleanPhone = phone.replace(/\D/g, "");
 
 			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ phone_number: `91${phone}` }),
+				body: JSON.stringify({ phone_number: `91${cleanPhone}` }),
 			});
 
 			if (!response.ok) {
@@ -124,24 +137,25 @@ function VerifyOtpClient() {
 	};
 
 	return (
-		<div className="min-h-screen bg-zinc-50/50 flex flex-col justify-center items-center px-4 py-8">
-			<div className="w-full max-w-sm bg-white rounded-lg border border-zinc-200/80 p-6 shadow-2xs space-y-5">
-				<div className="flex items-center gap-2">
+		<div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 font-sans">
+			<div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 shadow-xl space-y-6">
+				
+				<div className="flex items-center gap-3 pb-4 border-b border-slate-100">
 					<button
 						onClick={handleBack}
-						className="w-8 h-8 rounded-md hover:bg-zinc-100 flex items-center justify-center text-zinc-600 transition cursor-pointer"
+						className="w-9 h-9 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-600 transition cursor-pointer"
 					>
-						<ArrowLeft size={18} />
+						<ArrowLeft size={20} />
 					</button>
 					<div>
-						<h1 className="text-lg font-bold tracking-tight text-zinc-900">Partner Verification</h1>
-						<p className="text-xs text-zinc-500">
-							Sent to <span className="font-medium text-zinc-800">+91 {phone}</span>
+						<h1 className="text-xl font-bold tracking-tight text-slate-900">Partner Security Verification</h1>
+						<p className="text-xs text-slate-500">
+							Sent to <span className="font-semibold text-slate-800">+91 {phone}</span>
 						</p>
 					</div>
 				</div>
 
-				<div className="flex justify-between gap-1.5 py-2">
+				<div className="flex justify-center gap-2 py-2">
 					{otpDigits.map((digit, idx) => (
 						<input
 							key={idx}
@@ -152,26 +166,26 @@ function VerifyOtpClient() {
 							value={digit}
 							onChange={(e) => handleChange(e.target.value, idx)}
 							onKeyDown={(e) => handleKeyDown(e, idx)}
-							className="w-10 h-12 border border-zinc-300 rounded-md text-center text-base font-semibold text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+							className="w-11 h-14 border border-slate-300 rounded-xl text-center text-lg font-bold text-slate-900 focus:outline-none focus:border-[#ff8a4c] focus:ring-2 focus:ring-[#ff8a4c]/20 transition shadow-2xs"
 						/>
 					))}
 				</div>
 
-				<div className="flex justify-between items-center text-xs text-zinc-500 pt-1">
+				<div className="flex justify-between items-center text-xs text-slate-500 pt-1">
 					<span>
 						Didn't receive code?{" "}
 						<button
 							disabled={!resendEnabled || resending}
 							onClick={handleResend}
 							className={`font-semibold ${
-								resendEnabled ? "text-zinc-900 underline cursor-pointer" : "text-zinc-400 cursor-not-allowed"
+								resendEnabled ? "text-[#ff8a4c] underline cursor-pointer hover:text-[#f07432]" : "text-slate-400 cursor-not-allowed"
 							}`}
 						>
-							{resending ? "Sending…" : "Resend"}
+							{resending ? "Resending…" : "Resend OTP"}
 						</button>
 					</span>
 
-					<span className="font-mono text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded text-[11px]">
+					<span className="font-mono text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg text-xs font-semibold">
 						{formatTime(seconds)}
 					</span>
 				</div>
@@ -179,11 +193,11 @@ function VerifyOtpClient() {
 				<button
 					onClick={handleVerify}
 					disabled={loading}
-					className={`w-full text-white font-medium py-2.5 rounded-md text-sm shadow-xs transition cursor-pointer ${
-						loading ? "bg-zinc-200 text-zinc-400 cursor-not-allowed" : "bg-zinc-900 hover:bg-zinc-800"
+					className={`w-full font-bold py-3.5 rounded-xl text-sm shadow-md transition cursor-pointer ${
+						loading ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none" : "bg-[#ff8a4c] hover:bg-[#f07432] text-white shadow-orange-500/20 active:scale-98"
 					}`}
 				>
-					{loading ? "Verifying Code…" : "Verify & Sign In"}
+					{loading ? "Verifying Code…" : "Verify & Open Console"}
 				</button>
 			</div>
 		</div>
@@ -192,7 +206,7 @@ function VerifyOtpClient() {
 
 export default function VerifyOtpPage() {
 	return (
-		<Suspense fallback={<div className="min-h-screen bg-zinc-50 flex items-center justify-center text-zinc-500 text-sm">Loading verification…</div>}>
+		<Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-500 text-sm">Loading verification…</div>}>
 			<VerifyOtpClient />
 		</Suspense>
 	);

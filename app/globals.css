@@ -1,36 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  /* Slate Neutral Palette (shadcn/ui style) */
-  --background: #fafafa;
-  --foreground: #09090b;
+  /* Neutral Slate & Grey Palette */
+  --background: #f8fafc;
+  --foreground: #0f172a;
 
   --card: #ffffff;
-  --card-foreground: #09090b;
+  --card-foreground: #0f172a;
 
   --popover: #ffffff;
-  --popover-foreground: #09090b;
+  --popover-foreground: #0f172a;
 
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
+  /* Primary Accent Color: Soft Pastel Orange */
+  --primary: #ff8a4c;
+  --primary-hover: #f07432;
+  --primary-soft: #fff4ed;
+  --primary-border: #ffd5be;
+  --primary-foreground: #ffffff;
 
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
 
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
 
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
+  --accent: #fff4ed;
+  --accent-foreground: #ea580c;
 
   --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
+  --destructive-foreground: #ffffff;
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #18181b;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #ff8a4c;
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 }
 
 @theme {
@@ -44,6 +48,9 @@
   --color-popover-foreground: var(--popover-foreground);
 
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-border: var(--primary-border);
   --color-primary-foreground: var(--primary-foreground);
 
   --color-secondary: var(--secondary);
@@ -61,6 +68,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-pastel-orange: #ff8a4c;
+  --color-pastel-orange-light: #fff4ed;
+  --color-pastel-orange-hover: #f07432;
+  --color-pastel-orange-border: #ffd5be;
 }
 
 body {
