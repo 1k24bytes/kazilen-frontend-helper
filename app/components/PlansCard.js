@@ -3,7 +3,7 @@
 import { Zap } from 'lucide-react'
 
 export default function PlansCard({
-  price = 199,
+  price = 899,
   validityDays = 30,
   orderType = 'Repair Jobs',
   onRecharge

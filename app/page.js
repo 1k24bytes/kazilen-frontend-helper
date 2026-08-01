@@ -7,11 +7,14 @@ import MyProgress from "./components/MyProgress";
 import OrderPlanCard from "./components/OrderPlanCard";
 import PlansCard from "./components/PlansCard";
 import LiveDispatchFeed from "./components/LiveDispatchFeed";
+import plansConfig from "./data/plans.json";
 
 export default function WorkerDashboard() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const defaultPlan = plansConfig.defaultPlan;
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -47,8 +50,8 @@ export default function WorkerDashboard() {
       today: { earnings: 0, hours: "0:00 hrs", orders: 0 },
       week: { earnings: 0, hours: "0:00 hrs", orders: 0 }
     },
-    plan: { completed: 0, totalLabel: "10", price: 199, timeLeft: "14 days remaining" },
-    recharge: { price: 199, validityDays: 30, orderType: "Electrician & Instant Repair" }
+    plan: { completed: 0, totalLabel: String(defaultPlan.totalJobs), price: defaultPlan.price, timeLeft: defaultPlan.timeLeft },
+    recharge: { price: defaultPlan.price, validityDays: defaultPlan.validityDays, orderType: defaultPlan.orderType }
   });
 
   if (loading) {
@@ -75,19 +78,19 @@ export default function WorkerDashboard() {
 
         {/* Active Order Quota & Plan Status */}
         <OrderPlanCard 
-          completed={data?.plan?.completed} 
-          totalLabel={data?.plan?.totalLabel || "10"}
-          price={data?.plan?.price || 199}
-          timeLeft={data?.plan?.timeLeft || "14 days remaining"}
+          completed={data?.plan?.completed || 0} 
+          totalLabel={data?.plan?.totalLabel || String(defaultPlan.totalJobs)}
+          price={data?.plan?.price || defaultPlan.price}
+          timeLeft={data?.plan?.timeLeft || defaultPlan.timeLeft}
         />
 
         {/* Recharge Subscription Module */}
         <PlansCard 
-          price={data?.recharge?.price || 199}
-          validityDays={data?.recharge?.validityDays || 30}
-          orderType={data?.recharge?.orderType || "Electrician & Instant Repair"}
+          price={data?.recharge?.price || defaultPlan.price}
+          validityDays={data?.recharge?.validityDays || defaultPlan.validityDays}
+          orderType={data?.recharge?.orderType || defaultPlan.orderType}
           onRecharge={() => {
-            alert('Recharge payment window opening... Select UPI/Card to extend 10 job dispatches.');
+            alert(`Recharge payment window opening for ₹${defaultPlan.price} plan... Select UPI/Card to extend 10 job dispatches.`);
           }} 
         />
       </div>

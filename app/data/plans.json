@@ -1,0 +1,11 @@
+{
+  "defaultPlan": {
+    "id": "starter_899",
+    "name": "Partner Subscription Pack",
+    "price": 899,
+    "totalJobs": 300,
+    "validityDays": 30,
+    "timeLeft": "30 days remaining",
+    "orderType": "Electrician & Instant Repair"
+  }
+}

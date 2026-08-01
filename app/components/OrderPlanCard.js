@@ -5,8 +5,8 @@ import { Clock, CheckCircle2 } from 'lucide-react'
 export default function OrderPlanCard({
   completed = 0,
   totalLabel = '10',
-  price = 199,
-  timeLeft = '14 days remaining'
+  price = 899,
+  timeLeft = '30 days remaining'
 }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs grid grid-cols-2 divide-x divide-slate-100 gap-4 text-center">
