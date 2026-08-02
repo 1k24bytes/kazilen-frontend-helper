@@ -5,21 +5,190 @@
       "name": "Electrician Services",
       "image": "/categories/Electrician-service.webp",
       "desc": "Wiring, repairs & fittings"
+    },
+    {
+      "id": "Plumber",
+      "name": "Plumber Services",
+      "image": "/categories/Plumber-service.webp",
+      "desc": "Pipes, leakage, taps & sanitary fittings"
+    },
+    {
+      "id": "ACTechnician",
+      "name": "AC Technician",
+      "image": "/categories/AC-service.webp",
+      "desc": "AC installation, servicing & repair"
+    },
+    {
+      "id": "Carpenter",
+      "name": "Carpenter Services",
+      "image": "/categories/Carpenter-service.webp",
+      "desc": "Furniture assembly, door fitting & woodwork"
     }
   ],
   "subCategories": [
-    { "id": "consult", "label": "Book Consultation", "price": 150, "image": "/subcategories/consultation.webp", "tag": "Fast Booking" },
-    { "id": "hourly", "label": "Book by Hour", "price": 199, "image": "/subcategories/book-by-hour.webp", "tag": "Flexible" },
-    { "id": "fan-install", "label": "Fan Installation", "price": 250, "image": "/subcategories/fan-installation.webp" },
-    { "id": "fan-repair", "label": "Fan Repair", "price": 180, "image": "/subcategories/fan-repair.webp" },
-    { "id": "light", "label": "Light Fitting", "price": 120, "image": "/subcategories/light.webp" },
-    { "id": "home-wiring", "label": "Home Wiring", "price": 499, "image": "/subcategories/home-wiring.webp" },
-    { "id": "switch-install", "label": "Switch Box Install", "price": 200, "image": "/subcategories/switch-box-installation.webp" },
-    { "id": "switch-repair", "label": "Switch Box Repair", "price": 150, "image": "/subcategories/switch-box-repair.webp" },
-    { "id": "switch-mcb", "label": "MCB & Fuse", "price": 220, "image": "/subcategories/mcb.webp" },
-    { "id": "inverter-install", "label": "Inverter Install", "price": 350, "image": "/subcategories/inverter-installation.webp" },
-    { "id": "inverter-maintainance", "label": "Inverter Service", "price": 299, "image": "/subcategories/inverter-maintainance.webp" },
-    { "id": "cooler-repair", "label": "Cooler Repair", "price": 250, "image": "/subcategories/cooler-repair.webp" },
-    { "id": "motor-rewinding", "label": "Motor Rewinding", "price": 450, "image": "/subcategories/motor-rewinding.webp" }
+    {
+      "id": "consult",
+      "categoryId": "Electrician",
+      "label": "Book Consultation",
+      "default_price_per_hour": 150,
+      "default_price_per_day": 900,
+      "default_description": "Initial electrical inspection, diagnosis & cost estimation.",
+      "image": "/subcategories/consultation.webp",
+      "tag": "Fast Booking"
+    },
+    {
+      "id": "hourly",
+      "categoryId": "Electrician",
+      "label": "Book by Hour",
+      "default_price_per_hour": 199,
+      "default_price_per_day": 1200,
+      "default_description": "General electrical troubleshooting and repair billed hourly.",
+      "image": "/subcategories/book-by-hour.webp",
+      "tag": "Flexible"
+    },
+    {
+      "id": "fan-install",
+      "categoryId": "Electrician",
+      "label": "Fan Installation",
+      "default_price_per_hour": 250,
+      "default_price_per_day": 1500,
+      "default_description": "Ceiling or wall fan mounting, hook assembly & wiring connection.",
+      "image": "/subcategories/fan-installation.webp"
+    },
+    {
+      "id": "fan-repair",
+      "categoryId": "Electrician",
+      "label": "Fan Repair",
+      "default_price_per_hour": 180,
+      "default_price_per_day": 1100,
+      "default_description": "Capacitor replacement, regulator fix & blade balancing.",
+      "image": "/subcategories/fan-repair.webp"
+    },
+    {
+      "id": "light",
+      "categoryId": "Electrician",
+      "label": "Light Fitting",
+      "default_price_per_hour": 120,
+      "default_price_per_day": 800,
+      "default_description": "LED light, tubelight, chandelier & fancy lamp installation.",
+      "image": "/subcategories/light.webp"
+    },
+    {
+      "id": "home-wiring",
+      "categoryId": "Electrician",
+      "label": "Home Wiring",
+      "default_price_per_hour": 499,
+      "default_price_per_day": 3000,
+      "default_description": "Full room or complete home electrical wiring & earthing setup.",
+      "image": "/subcategories/home-wiring.webp"
+    },
+    {
+      "id": "switch-install",
+      "categoryId": "Electrician",
+      "label": "Switch Box Install",
+      "default_price_per_hour": 200,
+      "default_price_per_day": 1200,
+      "default_description": "Modular switchboard installation & socket wiring.",
+      "image": "/subcategories/switch-box-installation.webp"
+    },
+    {
+      "id": "switch-repair",
+      "categoryId": "Electrician",
+      "label": "Switch Box Repair",
+      "default_price_per_hour": 150,
+      "default_price_per_day": 900,
+      "default_description": "Broken switch, socket repair & loose connection fix.",
+      "image": "/subcategories/switch-box-repair.webp"
+    },
+    {
+      "id": "switch-mcb",
+      "categoryId": "Electrician",
+      "label": "MCB & Fuse",
+      "default_price_per_hour": 220,
+      "default_price_per_day": 1300,
+      "default_description": "MCB tripping fix, main fuse replacement & circuit breaker install.",
+      "image": "/subcategories/mcb.webp"
+    },
+    {
+      "id": "inverter-install",
+      "categoryId": "Electrician",
+      "label": "Inverter Install",
+      "default_price_per_hour": 350,
+      "default_price_per_day": 2000,
+      "default_description": "Inverter battery setup, connection & main line bypass.",
+      "image": "/subcategories/inverter-installation.webp"
+    },
+    {
+      "id": "inverter-maintainance",
+      "categoryId": "Electrician",
+      "label": "Inverter Service",
+      "default_price_per_hour": 299,
+      "default_price_per_day": 1800,
+      "default_description": "Distilled water top-up, battery terminal cleaning & testing.",
+      "image": "/subcategories/inverter-maintainance.webp"
+    },
+    {
+      "id": "cooler-repair",
+      "categoryId": "Electrician",
+      "label": "Cooler Repair",
+      "default_price_per_hour": 250,
+      "default_price_per_day": 1500,
+      "default_description": "Water pump motor replacement, wiring & pad changing.",
+      "image": "/subcategories/cooler-repair.webp"
+    },
+    {
+      "id": "motor-rewinding",
+      "categoryId": "Electrician",
+      "label": "Motor Rewinding",
+      "default_price_per_hour": 450,
+      "default_price_per_day": 2500,
+      "default_description": "Water pump motor rewinding, bearing replacement & seal repair.",
+      "image": "/subcategories/motor-rewinding.webp"
+    },
+    {
+      "id": "tap-repair",
+      "categoryId": "Plumber",
+      "label": "Tap & Leakage Repair",
+      "default_price_per_hour": 180,
+      "default_price_per_day": 1000,
+      "default_description": "Dripping tap fix, pipe leakage repair & valve replacement.",
+      "image": "/subcategories/tap-repair.webp"
+    },
+    {
+      "id": "pipe-fitting",
+      "categoryId": "Plumber",
+      "label": "Pipe Line Fitting",
+      "default_price_per_hour": 300,
+      "default_price_per_day": 1800,
+      "default_description": "CPVC/PVC pipe laying, drainage unblocking & fitting installation.",
+      "image": "/subcategories/pipe-fitting.webp"
+    },
+    {
+      "id": "ac-servicing",
+      "categoryId": "ACTechnician",
+      "label": "AC Jet Servicing",
+      "default_price_per_hour": 399,
+      "default_price_per_day": 2200,
+      "default_description": "High-pressure jet foam servicing, filter cleaning & cooling check.",
+      "image": "/subcategories/ac-service.webp"
+    },
+    {
+      "id": "ac-gas-charge",
+      "categoryId": "ACTechnician",
+      "label": "AC Gas Charging",
+      "default_price_per_hour": 599,
+      "default_price_per_day": 3500,
+      "default_description": "Refrigerant gas top-up, leak testing & compressor check.",
+      "image": "/subcategories/ac-gas.webp"
+    },
+    {
+      "id": "door-repair",
+      "categoryId": "Carpenter",
+      "label": "Door & Lock Repair",
+      "default_price_per_hour": 220,
+      "default_price_per_day": 1300,
+      "default_description": "Door alignment, hinge adjustment & lock cylinder installation.",
+      "image": "/subcategories/door-repair.webp"
+    }
   ]
 }
