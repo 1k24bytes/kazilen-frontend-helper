@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { ArrowLeft, User, Calendar, Users, CheckCircle2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api";
 
 function CreateAccountClient() {
   const router = useRouter();
@@ -35,7 +36,7 @@ function CreateAccountClient() {
         gender: gender || null,
       };
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

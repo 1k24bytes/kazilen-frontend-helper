@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api";
 import TermsOfCondition from "./TermsOfCondition";
 import { ShieldCheck, ArrowRight } from "lucide-react";
 
@@ -30,7 +31,7 @@ export default function LoginPage() {
 		try {
 			setLoading(true);
 
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
+			const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

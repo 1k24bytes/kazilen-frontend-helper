@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 function VerifyOtpClient() {
 	const router = useRouter();
@@ -55,7 +56,7 @@ function VerifyOtpClient() {
 		try {
 			setLoading(true);
 
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`, {
+			const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -96,7 +97,7 @@ function VerifyOtpClient() {
 			setResending(true);
 			const cleanPhone = phone.replace(/\D/g, "");
 
-			const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
+			const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ phone_number: `91${cleanPhone}` }),

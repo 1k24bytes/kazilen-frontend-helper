@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api";
 import Header from "./components/Header";
 import MyProgress from "./components/MyProgress";
 import OrderPlanCard from "./components/OrderPlanCard";
@@ -25,7 +26,7 @@ export default function WorkerDashboard() {
 
     const fetchDashboard = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/worker/dashboard`, {
+        const response = await fetch(`${API_BASE_URL}/workers/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

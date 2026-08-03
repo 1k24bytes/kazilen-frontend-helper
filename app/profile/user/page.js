@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import BackHeader from '../components/BackHeader'
 import Header from '../../components/Header'
 import { User, Phone, Calendar, Users, ShieldCheck, Save, Check } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function WorkerUserProfilePage() {
   const router = useRouter()
@@ -49,7 +50,7 @@ export default function WorkerUserProfilePage() {
 
     async function fetchUserProfile() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+        const res = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (res.ok) {
@@ -90,7 +91,7 @@ export default function WorkerUserProfilePage() {
     const token = localStorage.getItem('access_token')
     if (token) {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+        await fetch(`${API_BASE_URL}/users/me`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

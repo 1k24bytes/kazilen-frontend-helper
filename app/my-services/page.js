@@ -19,6 +19,7 @@ import {
   Trash2,
   Check
 } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function MyServicesPage() {
   const router = useRouter()
@@ -121,7 +122,7 @@ export default function MyServicesPage() {
 
     async function fetchDbProfile() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+        const res = await fetch(`${API_BASE_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (res.ok) {
@@ -233,7 +234,7 @@ export default function MyServicesPage() {
     const token = localStorage.getItem('access_token')
     if (token) {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/services`, {
+        await fetch(`${API_BASE_URL}/users/me/services`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
