@@ -12,6 +12,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
+import CompletionReviewModal from '@/app/components/CompletionReviewModal';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -87,6 +88,8 @@ export default function JobDetailPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [resendStartFlash, setResendStartFlash] = useState(false);
   const [resendEndFlash, setResendEndFlash] = useState(false);
+  const [reviewStatus, setReviewStatus] = useState(null);
+  const [reviewClosed, setReviewClosed] = useState(false);
 
   const token = () => localStorage.getItem('access_token');
 
@@ -117,6 +120,16 @@ export default function JobDetailPage() {
   };
 
   useEffect(() => { if (bookingId) fetchBooking(); }, [bookingId]);
+
+  useEffect(() => {
+    if (!bookingId || booking?.status !== 'completed') return;
+    fetch(`${API_BASE_URL}/reviews/bookings/${bookingId}/status`, {
+      headers: { Authorization: `Bearer ${token()}` },
+    })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => data && setReviewStatus(data))
+      .catch(() => {});
+  }, [bookingId, booking?.status]);
 
   // Generate Start OTP → customer's app shows it, worker never sees it
   const handleGenerateStartOtp = async () => {
@@ -391,6 +404,15 @@ export default function JobDetailPage() {
                 </div>
               </div>
             )}
+
+            {booking.status === 'completed' && reviewStatus && !reviewClosed &&
+              (!reviewStatus.participant_review_submitted || !reviewStatus.platform_feedback_submitted) && (
+                <CompletionReviewModal
+                  bookingId={bookingId}
+                  initialStatus={reviewStatus}
+                  onComplete={() => setReviewClosed(true)}
+                />
+              )}
           </>
         )}
 
