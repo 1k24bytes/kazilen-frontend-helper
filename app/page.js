@@ -10,7 +10,17 @@ import PlansCard from "./components/PlansCard";
 import LiveDispatchFeed from "./components/LiveDispatchFeed";
 import plansConfig from "./data/plans.json";
 
+import AuthGuard from "./components/AuthGuard";
+
 export default function WorkerDashboard() {
+  return (
+    <AuthGuard>
+      <WorkerDashboardContent />
+    </AuthGuard>
+  );
+}
+
+function WorkerDashboardContent() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
