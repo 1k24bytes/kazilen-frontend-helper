@@ -254,21 +254,21 @@ export default function JobDetailPage() {
             </div>
 
             {/* ----------------------------------------------------------------
-                ACCEPTED → worker arrives, sends OTP to customer, enters it
+                ACCEPTED → worker arrives, generates OTP in customer portal, enters it
             ---------------------------------------------------------------- */}
             {booking.status === 'accepted' && (
               <div className="space-y-3">
                 <div className="bg-white rounded-md border border-slate-200 shadow-2xs p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <ShieldCheck size={16} className="text-[#ff8a4c]" />
-                    <p className="text-sm font-bold text-slate-900">Start Job</p>
+                    <p className="text-sm font-bold text-slate-900">Start Job Verification</p>
                   </div>
 
                   {!startOtpReady ? (
                     <>
                       <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                        Arrived at the customer's location? Tap below to send them a 6-digit OTP.
-                        Ask the customer for that code, then enter it here to officially start the job.
+                        Arrived at the customer's location? Tap below to generate the 6-digit Start OTP in the customer's Kazilen portal.
+                        Ask the customer for the code from their profile, then enter it here to officially start the job.
                       </p>
                       <button
                         onClick={handleGenerateStartOtp}
@@ -276,7 +276,7 @@ export default function JobDetailPage() {
                         className="w-full py-3 bg-[#ff8a4c] hover:bg-[#f07432] text-white text-sm font-bold rounded-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {actionLoading ? <Loader2 size={15} className="animate-spin" /> : <Smartphone size={15} />}
-                        I'm at the location — Send OTP to Customer
+                        I'm at the location — Generate Start OTP in Customer Portal
                       </button>
                     </>
                   ) : (
@@ -284,7 +284,7 @@ export default function JobDetailPage() {
                       <div className="flex items-start gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm">
                         <Smartphone size={15} className="text-[#ff8a4c] shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-700 leading-relaxed">
-                          OTP sent to the customer's app. Ask them to share the 6-digit code and enter it below.
+                          Start OTP generated in the customer's portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
                         </p>
                       </div>
                       <button
@@ -301,7 +301,7 @@ export default function JobDetailPage() {
                           : resendStartFlash
                           ? <CheckCircle2 size={12} className="text-emerald-600" />
                           : <Smartphone size={12} />}
-                        {resendStartFlash ? 'OTP Sent to Customer!' : 'Resend OTP to Customer'}
+                        {resendStartFlash ? 'OTP Generated in Customer Portal!' : 'Regenerate OTP in Customer Portal'}
                       </button>
                     </div>
                   )}
@@ -310,7 +310,7 @@ export default function JobDetailPage() {
                 {startOtpReady && (
                   <OTPVerifyInput
                     label="Enter OTP from Customer"
-                    hint="Type the 6-digit code the customer reads to you to start the job."
+                    hint="Type the 6-digit code the customer reads from their Kazilen profile to start the job."
                     onVerify={handleVerifyStartOtp}
                     loading={actionLoading}
                   />
@@ -319,7 +319,7 @@ export default function JobDetailPage() {
             )}
 
             {/* ----------------------------------------------------------------
-                IN PROGRESS → worker finishes, sends end OTP to customer
+                IN PROGRESS → worker finishes, generates end OTP in customer portal
             ---------------------------------------------------------------- */}
             {booking.status === 'in_progress' && (
               <div className="space-y-3">
@@ -332,8 +332,8 @@ export default function JobDetailPage() {
                   {!endOtpReady ? (
                     <>
                       <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                        Finished the work? Tap below to send the customer a completion OTP.
-                        Ask them for that code and enter it here to close the job.
+                        Finished the work? Tap below to generate the 6-digit Completion OTP in the customer's Kazilen portal.
+                        Ask the customer for the code from their profile, then enter it here to close the job.
                       </p>
                       <button
                         onClick={handleGenerateEndOtp}
@@ -341,7 +341,7 @@ export default function JobDetailPage() {
                         className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {actionLoading ? <Loader2 size={15} className="animate-spin" /> : <Smartphone size={15} />}
-                        Job Done — Send Completion OTP to Customer
+                        Job Done — Generate Completion OTP in Customer Portal
                       </button>
                     </>
                   ) : (
@@ -349,7 +349,7 @@ export default function JobDetailPage() {
                       <div className="flex items-start gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm">
                         <Smartphone size={15} className="text-[#ff8a4c] shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-700 leading-relaxed">
-                          Completion OTP sent to the customer's app. Ask them for the code and enter it below.
+                          Completion OTP generated in customer's portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
                         </p>
                       </div>
                       <button
@@ -366,7 +366,7 @@ export default function JobDetailPage() {
                           : resendEndFlash
                           ? <CheckCircle2 size={12} className="text-emerald-600" />
                           : <Smartphone size={12} />}
-                        {resendEndFlash ? 'OTP Sent to Customer!' : 'Resend OTP to Customer'}
+                        {resendEndFlash ? 'OTP Generated in Customer Portal!' : 'Regenerate Completion OTP'}
                       </button>
                     </div>
                   )}
@@ -375,7 +375,7 @@ export default function JobDetailPage() {
                 {endOtpReady && (
                   <OTPVerifyInput
                     label="Enter Completion OTP from Customer"
-                    hint="Type the 6-digit code the customer reads to you to complete the job."
+                    hint="Type the 6-digit code the customer reads from their Kazilen profile to complete the job."
                     onVerify={handleVerifyEndOtp}
                     loading={actionLoading}
                   />
