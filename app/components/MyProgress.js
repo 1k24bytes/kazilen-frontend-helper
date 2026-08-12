@@ -16,13 +16,13 @@ export default function MyProgress({ progressData }) {
   const current = useMemo(() => safeData[period] || safeData.today, [period, safeData])
 
   return (
-    <section className="w-full bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">
+    <section className="w-full bg-white rounded-md border border-slate-200 p-5 shadow-2xs space-y-4">
       <header className="flex items-center justify-between">
         <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
           Work Progress & Earnings
         </h3>
 
-        <div className="inline-flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200">
+        <div className="inline-flex items-center p-1 bg-slate-100 rounded-sm border border-slate-200">
           {PERIODS.map(({ key, label }) => {
             const isActive = period === key
 
@@ -30,7 +30,7 @@ export default function MyProgress({ progressData }) {
               <button
                 key={key}
                 onClick={() => setPeriod(key)}
-                className={`px-3 py-1 rounded-md text-xs font-bold transition cursor-pointer ${
+                className={`px-3 py-1 rounded-sm text-xs font-bold transition cursor-pointer ${
                   isActive
                     ? 'bg-slate-900 text-white shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -43,7 +43,7 @@ export default function MyProgress({ progressData }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-3 divide-x divide-slate-100 bg-slate-50/50 rounded-xl p-4 border border-slate-200/80 text-center">
+      <div className="grid grid-cols-3 divide-x divide-slate-100 bg-slate-50/50 rounded-sm p-4 border border-slate-200/80 text-center">
         <div>
           <span className="text-xs font-semibold text-slate-500 block uppercase text-[10px]">Earnings</span>
           <span className="text-lg font-bold text-slate-900 mt-1 block">

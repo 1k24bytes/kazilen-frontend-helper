@@ -17,6 +17,7 @@ import {
 import { API_BASE_URL } from "@/lib/api";
 import servicesConfig from "@/app/data/services.json";
 import BackHeader from "@/app/profile/components/BackHeader";
+import BottomNav from "@/app/components/BottomNav";
 
 function getServiceLabel(serviceId) {
   const service = servicesConfig.subCategories?.find((item) => item.id === serviceId);
@@ -303,7 +304,7 @@ export default function WorkerRatingPage() {
   const totalCount = receivedList.length;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24">
       <BackHeader title="Customer Ratings & Reviews" />
 
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6">
@@ -459,6 +460,8 @@ export default function WorkerRatingPage() {
           onSaved={saveEditedReview}
         />
       )}
+
+      <BottomNav />
     </div>
   );
 }

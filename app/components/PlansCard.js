@@ -9,7 +9,7 @@ export default function PlansCard({
   onRecharge
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs flex items-center justify-between gap-4">
+    <div className="bg-white rounded-md border border-slate-200 p-5 shadow-2xs flex items-center justify-between gap-4">
       <div>
         <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
           Subscription Plan
@@ -24,7 +24,7 @@ export default function PlansCard({
 
       <button
         onClick={onRecharge}
-        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shrink-0"
+        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-sm text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shrink-0"
       >
         <Zap size={14} />
         <span>Recharge</span>

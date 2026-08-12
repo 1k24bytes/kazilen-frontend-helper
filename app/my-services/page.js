@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import BackHeader from '../profile/components/BackHeader'
 import Header from '../components/Header'
+import BottomNav from '../components/BottomNav'
 import servicesData from '../data/services.json'
 import {
   Save,
@@ -564,6 +565,7 @@ export default function MyServicesPage() {
         </div>
       )}
 
+      <BottomNav />
     </div>
   )
 }

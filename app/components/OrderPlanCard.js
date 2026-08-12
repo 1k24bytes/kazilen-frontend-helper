@@ -9,7 +9,7 @@ export default function OrderPlanCard({
   timeLeft = '30 days remaining'
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs grid grid-cols-2 divide-x divide-slate-100 gap-4 text-center">
+    <div className="bg-white rounded-md border border-slate-200 p-5 shadow-2xs grid grid-cols-2 divide-x divide-slate-100 gap-4 text-center">
       <div>
         <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 mb-1">
           <CheckCircle2 size={14} className="text-slate-700" />

@@ -31,12 +31,12 @@ export default function Header() {
   const toggle = () => setOnline((prev) => !prev)
 
   return (
-    <header className="w-full bg-white rounded-xl border border-slate-200 px-4 py-3 shadow-2xs flex items-center justify-between gap-4">
+    <header className="w-full bg-white rounded-md border border-slate-200 px-4 py-3 shadow-2xs flex items-center justify-between gap-4">
       {/* Brand & Status */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/')}
-          className="text-base font-extrabold text-slate-900 hover:text-[#ff8a4c] transition"
+          className="text-base font-extrabold text-slate-900 hover:text-[#ff8a4c] transition cursor-pointer"
         >
           Kazilen Partner
         </button>
@@ -53,7 +53,7 @@ export default function Header() {
       <div className="flex items-center gap-3">
         <button
           onClick={toggle}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-sm border text-xs font-bold transition cursor-pointer ${
             online
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -65,7 +65,7 @@ export default function Header() {
 
         <button
           onClick={() => router.push('/profile')}
-          className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center transition cursor-pointer hover:bg-slate-800 shrink-0"
+          className="w-8 h-8 rounded-sm bg-slate-900 text-white flex items-center justify-center transition cursor-pointer hover:bg-slate-800 shrink-0"
           aria-label="Profile"
           title={partnerName}
         >
