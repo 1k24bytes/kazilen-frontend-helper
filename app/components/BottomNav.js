@@ -36,10 +36,16 @@ export default function BottomNav() {
         <div className="flex items-center justify-around">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              item.href === '/'
-                ? pathname === '/'
-                : pathname.startsWith(item.href);
+            let isActive = false;
+            if (item.href === '/') {
+              isActive = pathname === '/';
+            } else if (item.href === '/profile/rating') {
+              isActive = pathname === '/profile/rating' || pathname.startsWith('/profile/rating/');
+            } else if (item.href === '/profile') {
+              isActive = (pathname === '/profile' || pathname.startsWith('/profile/')) && !pathname.startsWith('/profile/rating');
+            } else {
+              isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            }
 
             return (
               <Link
