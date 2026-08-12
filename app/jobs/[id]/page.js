@@ -10,6 +10,7 @@ import {
   AlertCircle,
   ArrowRight,
   Smartphone,
+  Zap,
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
 import CompletionReviewModal from '@/app/components/CompletionReviewModal';
@@ -206,9 +207,10 @@ export default function JobDetailPage() {
     finally { setActionLoading(false); }
   };
 
-  const serviceLabel = booking?.service_id
-    ?.replace(/-/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const serviceLabel = (id) =>
+    (id || booking?.service_id || '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Service';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
@@ -246,7 +248,10 @@ export default function JobDetailPage() {
             {/* Job Details */}
             <div className="bg-white rounded-md border border-slate-200 shadow-2xs p-4">
               <p className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Job Details</p>
-              <InfoRow label="Service" value={serviceLabel} />
+              <InfoRow label="Service" value={serviceLabel(booking.service_id)} />
+              {(booking.time_slot?.toUpperCase().includes('ASAP') || booking.time_slot?.toUpperCase().includes('INSTANT')) && (
+                <InfoRow label="Dispatch Mode" value="Reach ASAP (Immediate Callout)" />
+              )}
               <InfoRow label="Date" value={booking.date} />
               <InfoRow label="Time" value={booking.time_slot} />
               <InfoRow label="Address" value={booking.address} />
@@ -267,7 +272,7 @@ export default function JobDetailPage() {
                   {!startOtpReady ? (
                     <>
                       <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                        Arrived at the customer's location? Tap below to generate the 6-digit Start OTP in the customer's Kazilen portal.
+                        Arrived at the customer&apos;s location? Tap below to generate the 6-digit Start OTP in the customer&apos;s Kazilen portal.
                         Ask the customer for the code from their profile, then enter it here to officially start the job.
                       </p>
                       <button
@@ -276,7 +281,7 @@ export default function JobDetailPage() {
                         className="w-full py-3 bg-[#ff8a4c] hover:bg-[#f07432] text-white text-sm font-bold rounded-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {actionLoading ? <Loader2 size={15} className="animate-spin" /> : <Smartphone size={15} />}
-                        I'm at the location — Generate Start OTP in Customer Portal
+                        I&apos;m at the location — Generate Start OTP in Customer Portal
                       </button>
                     </>
                   ) : (
@@ -284,7 +289,7 @@ export default function JobDetailPage() {
                       <div className="flex items-start gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm">
                         <Smartphone size={15} className="text-[#ff8a4c] shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-700 leading-relaxed">
-                          Start OTP generated in the customer's portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
+                          Start OTP generated in the customer&apos;s portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
                         </p>
                       </div>
                       <button
@@ -332,7 +337,7 @@ export default function JobDetailPage() {
                   {!endOtpReady ? (
                     <>
                       <p className="text-xs text-slate-500 mb-4 leading-relaxed">
-                        Finished the work? Tap below to generate the 6-digit Completion OTP in the customer's Kazilen portal.
+                        Finished the work? Tap below to generate the 6-digit Completion OTP in the customer&apos;s Kazilen portal.
                         Ask the customer for the code from their profile, then enter it here to close the job.
                       </p>
                       <button
@@ -349,7 +354,7 @@ export default function JobDetailPage() {
                       <div className="flex items-start gap-2 p-3 bg-slate-50 border border-slate-200 rounded-sm">
                         <Smartphone size={15} className="text-[#ff8a4c] shrink-0 mt-0.5" />
                         <p className="text-xs text-slate-700 leading-relaxed">
-                          Completion OTP generated in customer's portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
+                          Completion OTP generated in customer&apos;s portal. Ask the customer to check their Kazilen profile / booking page and share the 6-digit code.
                         </p>
                       </div>
                       <button

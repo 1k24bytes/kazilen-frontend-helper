@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import BackHeader from './components/BackHeader'
 import BottomNav from '../components/BottomNav'
 import { useRouter } from 'next/navigation'
@@ -15,9 +16,39 @@ import {
   Zap,
   CreditCard
 } from 'lucide-react'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function ProfilePage() {
   const router = useRouter()
+  const [workerProfile, setWorkerProfile] = useState({ full_name: '', phone_number: '' })
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token')
+    const savedName = localStorage.getItem('kazilen_professional_name') || localStorage.getItem('worker_name') || ''
+    const savedPhone = localStorage.getItem('user_phone') || localStorage.getItem('phone') || ''
+
+    if (savedName || savedPhone) {
+      setWorkerProfile({ full_name: savedName, phone_number: savedPhone })
+    }
+
+    if (!token) return
+
+    fetch(`${API_BASE_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (data) {
+          setWorkerProfile({
+            full_name: data.full_name || savedName || '',
+            phone_number: data.phone_number || savedPhone || ''
+          })
+          if (data.full_name) localStorage.setItem('kazilen_professional_name', data.full_name)
+          if (data.phone_number) localStorage.setItem('user_phone', data.phone_number)
+        }
+      })
+      .catch((e) => console.error('Failed to load profile:', e))
+  }, [])
 
   const handleLogout = async () => {
     if (typeof window !== 'undefined') {
@@ -26,26 +57,48 @@ export default function ProfilePage() {
     window.location.href = '/login'
   }
 
+  const displayName = workerProfile.full_name?.trim() || 'Service Partner'
+  const initial = (workerProfile.full_name?.trim() || 'P').charAt(0).toUpperCase()
+  const formatPhone = (raw) => {
+    if (!raw) return ''
+    let clean = raw.replace(/\D/g, '')
+    if (clean.length > 10 && clean.startsWith('91')) {
+      clean = clean.substring(2)
+    }
+    return clean ? `+91 ${clean}` : ''
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
-      <BackHeader title="Technician Account" />
+      <BackHeader title={displayName} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         
         {/* Partner Info Header Card */}
-        <div className="bg-white rounded-md border border-slate-200 p-6 shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-sm bg-[#ff8a4c] text-white flex items-center justify-center font-bold text-lg shadow-2xs shrink-0">
-            P
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900 truncate">Service Partner Profile</h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-sm border border-emerald-200">
-                <ShieldCheck size={11} /> Verified Technician
-              </span>
+        <div className="bg-white rounded-md border border-slate-200 p-6 shadow-2xs flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-12 h-12 rounded-sm bg-[#ff8a4c] text-white flex items-center justify-center font-bold text-lg shadow-2xs shrink-0">
+              {initial}
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">Manage your dispatch preferences, active skills & plan subscriptions</p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base font-bold text-slate-900 truncate">{displayName}</h2>
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-sm border border-emerald-200">
+                  <ShieldCheck size={11} /> Verified Technician
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5 truncate">
+                {workerProfile.phone_number ? `${formatPhone(workerProfile.phone_number)} · ` : ''}Manage your dispatch preferences, active skills & plan subscriptions
+              </p>
+            </div>
           </div>
+
+          <button
+            onClick={() => router.push('/profile/user')}
+            className="px-3 py-1.5 rounded-sm border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold transition shrink-0 cursor-pointer"
+          >
+            Edit
+          </button>
         </div>
 
         {/* Practical Options List */}

@@ -18,7 +18,8 @@ import {
   Plus,
   Edit3,
   Trash2,
-  Check
+  Check,
+  Zap
 } from 'lucide-react'
 import { API_BASE_URL } from '@/lib/api'
 
@@ -31,7 +32,7 @@ export default function MyServicesPage() {
   // Selected trade role (default "Electrician")
   const [selectedRole, setSelectedRole] = useState('Electrician')
 
-  // Services state map: { [serviceId]: { enabled: bool, price_type: 'hourly' | 'daily', price: num, price_per_hour: num, price_per_day: num, description: str } }
+  // Services state map: { [serviceId]: { enabled: bool, price_type: 'fixed' | 'hourly', price: num, price_per_hour: num, fixed_price: num, description: str } }
   const [servicesState, setServicesState] = useState({})
   const [savedSuccess, setSavedSuccess] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -39,8 +40,8 @@ export default function MyServicesPage() {
   // Active Editing Modal State (null if closed, service Object if open)
   const [editingService, setEditingService] = useState(null)
   const [modalFormData, setModalFormData] = useState({
-    price_type: 'hourly',
-    price: 199,
+    price_type: 'fixed',
+    price: 249,
     description: ''
   })
 
@@ -48,12 +49,14 @@ export default function MyServicesPage() {
   const getInitialState = () => {
     const state = {}
     allSubCategories.forEach((s) => {
+      const type = s.default_price_type || (s.default_fixed_price ? 'fixed' : 'hourly')
+      const defaultPrice = type === 'fixed' ? (s.default_fixed_price || 249) : (s.default_price_per_hour || 199)
       state[s.id] = {
         enabled: false,
-        price_type: 'hourly',
-        price: s.default_price_per_hour || 199,
+        price_type: type,
+        price: defaultPrice,
         price_per_hour: s.default_price_per_hour || 199,
-        price_per_day: s.default_price_per_day || 1200,
+        fixed_price: s.default_fixed_price || 249,
         description: s.default_description || `${s.label} service performed by verified professional.`
       }
     })
@@ -77,14 +80,14 @@ export default function MyServicesPage() {
             if (typeof item === 'string') {
               if (state[item]) state[item].enabled = true
             } else if (typeof item === 'object' && item.id) {
-              const type = item.price_type || (item.price_per_day && !item.price_per_hour ? 'daily' : 'hourly')
-              const priceVal = item.price || (type === 'daily' ? item.price_per_day : item.price_per_hour) || 199
+              const type = item.price_type === 'hourly' ? 'hourly' : 'fixed'
+              const priceVal = item.price || (type === 'hourly' ? item.price_per_hour : (item.fixed_price || item.price_per_day)) || 249
               state[item.id] = {
                 enabled: item.enabled !== false,
                 price_type: type,
                 price: priceVal,
                 price_per_hour: type === 'hourly' ? priceVal : (item.price_per_hour || 199),
-                price_per_day: type === 'daily' ? priceVal : (item.price_per_day || 1200),
+                fixed_price: type === 'fixed' ? priceVal : (item.fixed_price || item.price_per_day || 249),
                 description: item.description || state[item.id]?.description || ''
               }
             }
@@ -96,14 +99,14 @@ export default function MyServicesPage() {
             if (typeof val === 'boolean') {
               if (state[id]) state[id].enabled = val
             } else if (typeof val === 'object') {
-              const type = val.price_type || (val.price_per_day && !val.price_per_hour ? 'daily' : 'hourly')
-              const priceVal = val.price || (type === 'daily' ? val.price_per_day : val.price_per_hour) || 199
+              const type = val.price_type === 'hourly' ? 'hourly' : 'fixed'
+              const priceVal = val.price || (type === 'hourly' ? val.price_per_hour : (val.fixed_price || val.price_per_day)) || 249
               state[id] = {
                 enabled: val.enabled !== false,
                 price_type: type,
                 price: priceVal,
                 price_per_hour: type === 'hourly' ? priceVal : (val.price_per_hour || 199),
-                price_per_day: type === 'daily' ? priceVal : (val.price_per_day || 1200),
+                fixed_price: type === 'fixed' ? priceVal : (val.fixed_price || val.price_per_day || 249),
                 description: val.description || state[id]?.description || ''
               }
             }
@@ -134,18 +137,19 @@ export default function MyServicesPage() {
               if (typeof item === 'string') {
                 if (state[item]) state[item].enabled = true
               } else if (typeof item === 'object' && item.id) {
-                const type = item.price_type || (item.price_per_day && !item.price_per_hour ? 'daily' : 'hourly')
-                const priceVal = item.price || (type === 'daily' ? item.price_per_day : item.price_per_hour) || 199
+                const type = item.price_type === 'hourly' ? 'hourly' : 'fixed'
+                const priceVal = item.price || (type === 'hourly' ? item.price_per_hour : (item.fixed_price || item.price_per_day)) || 249
                 state[item.id] = {
                   enabled: item.enabled !== false,
                   price_type: type,
                   price: priceVal,
                   price_per_hour: type === 'hourly' ? priceVal : (item.price_per_hour || 199),
-                  price_per_day: type === 'daily' ? priceVal : (item.price_per_day || 1200),
+                  fixed_price: type === 'fixed' ? priceVal : (item.fixed_price || item.price_per_day || 249),
                   description: item.description || state[item.id]?.description || ''
                 }
               }
             })
+            localStorage.setItem('worker_enabled_services', JSON.stringify(data.offered_services))
             setServicesState(state)
           }
         }
@@ -161,14 +165,17 @@ export default function MyServicesPage() {
   const openModal = (service) => {
     const current = servicesState[service.id] || {
       enabled: true,
-      price_type: 'hourly',
-      price: service.default_price_per_hour || 199,
+      price_type: service.default_price_type || 'fixed',
+      price: service.default_fixed_price || service.default_price_per_hour || 249,
       description: service.default_description || ''
     }
+    const defaultType = current.price_type || service.default_price_type || 'fixed'
+    const defaultVal = current.price || (defaultType === 'hourly' ? (current.price_per_hour || service.default_price_per_hour || 199) : (current.fixed_price || service.default_fixed_price || 249))
+
     setEditingService(service)
     setModalFormData({
-      price_type: current.price_type || 'hourly',
-      price: current.price || (current.price_type === 'daily' ? current.price_per_day : current.price_per_hour) || 199,
+      price_type: defaultType,
+      price: defaultVal,
       description: current.description || ''
     })
   }
@@ -178,7 +185,7 @@ export default function MyServicesPage() {
     if (!editingService) return
 
     const isHourly = modalFormData.price_type === 'hourly'
-    const priceVal = Number(modalFormData.price) || 199
+    const priceVal = Number(modalFormData.price) || (isHourly ? 199 : 249)
 
     setServicesState((prev) => ({
       ...prev,
@@ -186,8 +193,8 @@ export default function MyServicesPage() {
         enabled: true,
         price_type: modalFormData.price_type,
         price: priceVal,
-        price_per_hour: isHourly ? priceVal : (prev[editingService.id]?.price_per_hour || priceVal),
-        price_per_day: !isHourly ? priceVal : (prev[editingService.id]?.price_per_day || priceVal),
+        price_per_hour: isHourly ? priceVal : (prev[editingService.id]?.price_per_hour || 199),
+        fixed_price: !isHourly ? priceVal : (prev[editingService.id]?.fixed_price || 249),
         description: modalFormData.description || ''
       }
     }))
@@ -210,8 +217,8 @@ export default function MyServicesPage() {
       .map((id) => {
         const sub = allSubCategories.find((s) => s.id === id)
         const current = servicesState[id]
-        const type = current.price_type || 'hourly'
-        const priceVal = Number(current.price) || 199
+        const type = current.price_type === 'hourly' ? 'hourly' : 'fixed'
+        const priceVal = Number(current.price) || (type === 'hourly' ? 199 : 249)
 
         return {
           id: id,
@@ -220,8 +227,8 @@ export default function MyServicesPage() {
           enabled: true,
           price_type: type,
           price: priceVal,
-          price_per_hour: type === 'hourly' ? priceVal : current.price_per_hour,
-          price_per_day: type === 'daily' ? priceVal : current.price_per_day,
+          price_per_hour: type === 'hourly' ? priceVal : (current.price_per_hour || 199),
+          fixed_price: type === 'fixed' ? priceVal : (current.fixed_price || 249),
           description: current.description || ''
         }
       })
@@ -233,24 +240,45 @@ export default function MyServicesPage() {
     }
 
     const token = localStorage.getItem('access_token')
-    if (token) {
-      try {
-        await fetch(`${API_BASE_URL}/users/me/services`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ offered_services: configuredServices })
-        })
-      } catch (err) {
-        console.error('Failed to sync services to DB:', err)
-      }
+    if (!token) {
+      alert('You must be logged in to save services. Redirecting to login...')
+      router.push('/login')
+      setSaving(false)
+      return
     }
 
-    setSavedSuccess(true)
-    setSaving(false)
-    setTimeout(() => setSavedSuccess(false), 3000)
+    try {
+      const res = await fetch(`${API_BASE_URL}/users/me/services`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ offered_services: configuredServices })
+      })
+
+      if (res.status === 401) {
+        alert('Your session has expired. Please log in again.')
+        router.push('/login')
+        setSaving(false)
+        return
+      }
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        alert(errData.detail || 'Failed to save services to database. Please try again.')
+        setSaving(false)
+        return
+      }
+
+      setSavedSuccess(true)
+      setTimeout(() => setSavedSuccess(false), 3500)
+    } catch (err) {
+      console.error('Failed to sync services to DB:', err)
+      alert('Network error while saving services to database.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   // Filter subCategories for selected trade role
@@ -274,44 +302,44 @@ export default function MyServicesPage() {
               <Briefcase size={16} className="text-[#ff8a4c]" />
               <span>Select Your Trade Profession</span>
             </div>
-            <span className="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-0.5 rounded-sm border border-slate-200">
-              {activeCount} Listed Services
+            <span className="text-xs text-slate-500 font-medium">
+              {activeCount} active service{activeCount === 1 ? '' : 's'} listed
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {categories.map((cat) => {
               const isSelected = selectedRole === cat.id
               return (
                 <button
                   key={cat.id}
-                  type="button"
                   onClick={() => setSelectedRole(cat.id)}
-                  className={`px-3.5 py-3 rounded-md border text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                  className={`p-3 rounded-sm border text-left transition cursor-pointer flex flex-col justify-between gap-1.5 ${
                     isSelected
-                      ? 'bg-orange-50 border-[#ff8a4c] text-[#ff8a4c] font-bold shadow-2xs'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                      ? 'bg-[#fff4ed] border-[#ff8a4c] shadow-2xs ring-1 ring-[#ff8a4c]'
+                      : 'bg-slate-50/60 border-slate-200 hover:bg-slate-100/80'
                   }`}
                 >
-                  <span className="text-xs font-bold">{cat.name}</span>
+                  <span className={`text-xs font-bold ${isSelected ? 'text-[#ff8a4c]' : 'text-slate-800'}`}>
+                    {cat.name}
+                  </span>
+                  <span className="text-[10px] text-slate-500 line-clamp-1">{cat.desc}</span>
                 </button>
               )
             })}
           </div>
         </div>
 
-        {/* Success Alert */}
+        {/* Saved Success Toast */}
         {savedSuccess && (
-          <div className="p-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between shadow-2xs">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-              <span>Services and pricing saved and synced to database!</span>
-            </div>
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-sm text-emerald-800 text-xs font-bold flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+            <span>Offered services and custom rates saved successfully!</span>
           </div>
         )}
 
-        {/* Clean Service List */}
-        <div className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden divide-y divide-slate-100">
+        {/* Sub-Services List */}
+        <div className="bg-white rounded-md border border-slate-200 shadow-2xs divide-y divide-slate-100 overflow-hidden">
           <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-[#ff8a4c]" />
@@ -320,15 +348,15 @@ export default function MyServicesPage() {
               </h2>
             </div>
             <span className="text-xs text-slate-500 font-medium">
-              Set either Per Hour or Per Day pricing
+              Set either Fixed Job Price or Hourly (/hr) rate
             </span>
           </div>
 
           {roleSubCategories.map((service) => {
             const current = servicesState[service.id] || { enabled: false }
             const isListed = current.enabled
-            const isHourly = current.price_type !== 'daily'
-            const displayPrice = current.price || (isHourly ? current.price_per_hour : current.price_per_day) || 199
+            const isHourly = current.price_type === 'hourly'
+            const displayPrice = current.price || (isHourly ? current.price_per_hour : current.fixed_price) || 249
 
             return (
               <div
@@ -359,7 +387,7 @@ export default function MyServicesPage() {
                     <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                       {isListed ? (
                         <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-sm border border-emerald-200 text-[11px]">
-                          <Check size={12} /> ₹{displayPrice} {isHourly ? '/ hr' : '/ day'}
+                          <Check size={12} /> ₹{displayPrice} {isHourly ? '/ hr' : 'Fixed Job'}
                         </span>
                       ) : (
                         <span className="text-slate-400 text-[11px]">Not Listed</span>
@@ -368,7 +396,6 @@ export default function MyServicesPage() {
                   </div>
                 </div>
 
-                {/* Actions: Modal Trigger */}
                 <div className="flex items-center gap-2 shrink-0">
                   {isListed ? (
                     <button
@@ -377,7 +404,7 @@ export default function MyServicesPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-orange-200 bg-orange-50 text-[#ff8a4c] text-xs font-bold hover:bg-orange-100 transition cursor-pointer"
                     >
                       <Edit3 size={14} />
-                      <span>Edit Rate</span>
+                      <span>Edit</span>
                     </button>
                   ) : (
                     <button
@@ -386,7 +413,7 @@ export default function MyServicesPage() {
                       className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm border border-slate-300 bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
                     >
                       <Plus size={14} />
-                      <span>Add Service</span>
+                      <span>Add</span>
                     </button>
                   )}
                 </div>
@@ -395,7 +422,6 @@ export default function MyServicesPage() {
           })}
         </div>
 
-        {/* Save CTA */}
         <div className="pt-2">
           <button
             onClick={handleSaveAll}
@@ -403,7 +429,7 @@ export default function MyServicesPage() {
             className="w-full bg-[#ff8a4c] hover:bg-[#f07432] text-white font-bold py-3.5 rounded-md text-sm shadow-2xs transition cursor-pointer flex items-center justify-center gap-2"
           >
             <Save size={16} />
-            <span>{saving ? 'Saving to Database...' : 'Save & Publish Offered Services'}</span>
+            <span>{saving ? 'Saving...' : 'Save & Publish Offered Services'}</span>
           </button>
         </div>
 
@@ -414,7 +440,6 @@ export default function MyServicesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-md rounded-md border border-slate-200 shadow-2xl overflow-hidden space-y-0">
             
-            {/* Modal Header */}
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-sm bg-[#fff4ed] text-[#ff8a4c] border border-orange-200 flex items-center justify-center font-bold text-sm">
@@ -422,7 +447,7 @@ export default function MyServicesPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">{editingService.label}</h3>
-                  <p className="text-xs text-slate-500">Choose pricing mode & description</p>
+                  <p className="text-xs text-slate-500">Choose pricing mode & rate</p>
                 </div>
               </div>
 
@@ -435,15 +460,27 @@ export default function MyServicesPage() {
               </button>
             </div>
 
-            {/* Modal Form Body */}
             <div className="p-5 space-y-4">
 
-              {/* Pricing Type Selector (Per Hour OR Per Day) */}
+              {/* Pricing Type Selector (Fixed Job Price OR Price Per Hour) */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-2">
-                  Pricing Mode (Select Hour OR Day Rate)
+                  Pricing Mode (Select Fixed Price OR Hourly Rate)
                 </label>
                 <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setModalFormData({ ...modalFormData, price_type: 'fixed', price: modalFormData.price || editingService.default_fixed_price || 249 })}
+                    className={`py-2.5 px-3 rounded-sm border text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                      modalFormData.price_type === 'fixed'
+                        ? 'bg-orange-50 border-[#ff8a4c] text-[#ff8a4c] shadow-2xs'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Zap size={15} />
+                    <span>Fixed Job Price</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setModalFormData({ ...modalFormData, price_type: 'hourly', price: modalFormData.price || editingService.default_price_per_hour || 199 })}
@@ -456,34 +493,21 @@ export default function MyServicesPage() {
                     <Clock size={15} />
                     <span>Price Per Hour</span>
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setModalFormData({ ...modalFormData, price_type: 'daily', price: modalFormData.price || editingService.default_price_per_day || 1200 })}
-                    className={`py-2.5 px-3 rounded-sm border text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
-                      modalFormData.price_type === 'daily'
-                        ? 'bg-orange-50 border-[#ff8a4c] text-[#ff8a4c] shadow-2xs'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Calendar size={15} />
-                    <span>Price Per Day</span>
-                  </button>
                 </div>
               </div>
 
               {/* Price Input Field */}
               <div>
                 <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1.5">
-                  {modalFormData.price_type === 'hourly' ? (
+                  {modalFormData.price_type === 'fixed' ? (
                     <>
-                      <Clock size={14} className="text-[#ff8a4c]" />
-                      <span>Set Hourly Rate (₹/hr)</span>
+                      <Zap size={14} className="text-[#ff8a4c]" />
+                      <span>Set Fixed Job Price (₹ Flat for complete job)</span>
                     </>
                   ) : (
                     <>
-                      <Calendar size={14} className="text-[#ff8a4c]" />
-                      <span>Set Daily Rate (₹/day)</span>
+                      <Clock size={14} className="text-[#ff8a4c]" />
+                      <span>Set Hourly Rate (₹/hr)</span>
                     </>
                   )}
                 </label>
@@ -495,11 +519,11 @@ export default function MyServicesPage() {
                     min="0"
                     value={modalFormData.price}
                     onChange={(e) => setModalFormData({ ...modalFormData, price: e.target.value })}
-                    placeholder={modalFormData.price_type === 'hourly' ? "e.g. 199" : "e.g. 1200"}
-                    className="w-full pl-8 pr-14 py-2 text-sm bg-white rounded-sm border border-slate-300 font-bold text-slate-900 focus:outline-none focus:border-[#ff8a4c]"
+                    placeholder={modalFormData.price_type === 'fixed' ? "e.g. 249" : "e.g. 199"}
+                    className="w-full pl-8 pr-20 py-2 text-sm bg-white rounded-sm border border-slate-300 font-bold text-slate-900 focus:outline-none focus:border-[#ff8a4c]"
                   />
                   <span className="absolute right-3 top-2.5 text-slate-400 text-xs font-bold">
-                    {modalFormData.price_type === 'hourly' ? '/ hr' : '/ day'}
+                    {modalFormData.price_type === 'fixed' ? 'Fixed / Job' : '/ hr'}
                   </span>
                 </div>
               </div>
@@ -514,12 +538,12 @@ export default function MyServicesPage() {
                   rows={3}
                   value={modalFormData.description}
                   onChange={(e) => setModalFormData({ ...modalFormData, description: e.target.value })}
-                  placeholder="Detail what equipment or guarantees are included..."
+                  placeholder="Detail what tasks, equipment or warranty are included..."
                   className="w-full p-2.5 text-xs bg-white rounded-sm border border-slate-300 text-slate-800 leading-relaxed focus:outline-none focus:border-[#ff8a4c]"
                 />
               </div>
 
-            </div>
+            </div> 
 
             {/* Modal Footer Actions */}
             <div className="p-5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3">

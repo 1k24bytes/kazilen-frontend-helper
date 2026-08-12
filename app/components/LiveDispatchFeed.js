@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Clock, ChevronRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, ChevronRight, CheckCircle2, Loader2, AlertCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
 
@@ -129,6 +129,11 @@ export default function LiveDispatchFeed() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-xs font-bold text-slate-900 truncate">{serviceLabel(b.service_id)}</p>
                       <StatusBadge status={b.status} />
+                      {(b.time_slot?.toUpperCase().includes('ASAP') || b.time_slot?.toUpperCase().includes('INSTANT')) && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded-sm">
+                          <Zap size={10} className="fill-amber-600 text-amber-700" /> Reach ASAP
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <Clock size={11} className="shrink-0" /> {b.date} · {b.time_slot}
@@ -173,7 +178,14 @@ export default function LiveDispatchFeed() {
                   </div>
 
                   <div className="flex-1 min-w-0 space-y-1">
-                    <p className="text-sm font-bold text-slate-900 truncate">{serviceLabel(b.service_id)}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-bold text-slate-900 truncate">{serviceLabel(b.service_id)}</p>
+                      {(b.time_slot?.toUpperCase().includes('ASAP') || b.time_slot?.toUpperCase().includes('INSTANT')) && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-1.5 py-0.5 rounded-sm">
+                          <Zap size={10} className="fill-amber-600 text-amber-700" /> Reach ASAP
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-500 flex items-center gap-1">
                       <Clock size={11} className="shrink-0" /> {b.date} · {b.time_slot}
                     </p>
