@@ -406,10 +406,9 @@ export default function JobDetailPage() {
             )}
 
             {booking.status === 'completed' && reviewStatus && !reviewClosed &&
-              (!reviewStatus.participant_review_submitted || !reviewStatus.platform_feedback_submitted) && (
+              !reviewStatus.participant_review_submitted && (
                 <CompletionReviewModal
                   bookingId={bookingId}
-                  initialStatus={reviewStatus}
                   onComplete={() => setReviewClosed(true)}
                 />
               )}

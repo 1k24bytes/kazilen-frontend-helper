@@ -6,10 +6,7 @@ import { API_BASE_URL } from "@/lib/api";
 
 const RATING_OPTIONS = [1, 2, 3, 4, 5];
 
-export default function CompletionReviewModal({ bookingId, initialStatus, onComplete }) {
-  const [stage, setStage] = useState(
-    initialStatus.participant_review_submitted ? "platform" : "participant"
-  );
+export default function CompletionReviewModal({ bookingId, onComplete }) {
   const [rating, setRating] = useState(0);
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
@@ -29,8 +26,7 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
     setError("");
     try {
       const token = localStorage.getItem("access_token");
-      const reviewType = stage === "participant" ? "participant" : "platform";
-      const response = await fetch(`${API_BASE_URL}/reviews/bookings/${bookingId}/${reviewType}`, {
+      const response = await fetch(`${API_BASE_URL}/reviews/bookings/${bookingId}/participant`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,18 +39,7 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
         setError(data.detail || "Could not save your review.");
         return;
       }
-
-      if (stage === "participant") {
-        if (initialStatus.platform_feedback_submitted) {
-          onComplete();
-        } else {
-          setStage("platform");
-          setRating(0);
-          setDescription("");
-        }
-      } else {
-        onComplete();
-      }
+      onComplete();
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -62,30 +47,26 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
     }
   };
 
-  const isParticipantStage = stage === "participant";
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
       <div className="w-full max-w-md rounded-md border border-slate-200 bg-white p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              {isParticipantStage ? "Step 1 of 2" : "Step 2 of 2"}
-            </p>
-            <h2 className="mt-1 text-base font-bold tracking-tight text-slate-900">
-              {isParticipantStage ? "Rate your customer" : "Rate Kazilen"}
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-800 px-2 py-0.5 rounded-sm border border-amber-200">
+              Customer Feedback
+            </span>
+            <h2 className="mt-2 text-base font-bold tracking-tight text-slate-900">
+              Rate your customer
             </h2>
             <p className="mt-1 text-xs leading-relaxed text-slate-500">
-              {isParticipantStage
-                ? "How was your service experience with this customer?"
-                : "Tell us how we can improve the Kazilen experience."}
+              How was your service experience with this customer?
             </p>
           </div>
           <button
             type="button"
             onClick={onComplete}
             aria-label="Close review"
-            className="rounded-sm p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-sm p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
           >
             <X size={17} />
           </button>
@@ -99,7 +80,7 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
               onClick={() => setRating(value)}
               aria-label={`${value} star${value === 1 ? "" : "s"}`}
               aria-pressed={rating === value}
-              className={`rounded-sm border p-2 transition-colors ${
+              className={`rounded-sm border p-2 transition-colors cursor-pointer ${
                 rating >= value
                   ? "border-amber-200 bg-amber-50 text-amber-600"
                   : "border-slate-200 bg-white text-slate-300 hover:border-slate-300"
@@ -111,7 +92,7 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
         </div>
 
         <label className="mt-5 block text-xs font-bold text-slate-700" htmlFor="review-description">
-          {isParticipantStage ? "Description about the customer" : "Platform feedback"}
+          Review details
         </label>
         <textarea
           id="review-description"
@@ -119,7 +100,7 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
           onChange={(event) => setDescription(event.target.value)}
           maxLength={2000}
           rows={4}
-          placeholder={isParticipantStage ? "Write a short review about the customer..." : "Write a short note about Kazilen..."}
+          placeholder="Write a short review about customer cooperation and site experience..."
           className="mt-2 w-full resize-none rounded-sm border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#ff8a4c]"
         />
         {error && <p className="mt-2 text-xs font-medium text-red-600">{error}</p>}
@@ -128,10 +109,10 @@ export default function CompletionReviewModal({ bookingId, initialStatus, onComp
           type="button"
           onClick={submitReview}
           disabled={saving}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-sm bg-[#ff8a4c] px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#f07432] disabled:opacity-50"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-sm bg-[#ff8a4c] px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-[#f07432] disabled:opacity-50 cursor-pointer"
         >
           {saving && <Loader2 size={14} className="animate-spin" />}
-          {isParticipantStage ? "Continue" : "Submit feedback"}
+          <span>Submit Review</span>
         </button>
       </div>
     </div>
