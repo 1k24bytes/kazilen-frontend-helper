@@ -15,21 +15,29 @@ import {
   ShieldCheck,
   Zap,
   CreditCard,
-  Clock
+  Clock,
+  MapPin
 } from 'lucide-react'
+import WorkerLocationModal from '../components/WorkerLocationModal'
 import { API_BASE_URL } from '@/lib/api'
 
 export default function ProfilePage() {
   const router = useRouter()
   const [workerProfile, setWorkerProfile] = useState({ full_name: '', phone_number: '' })
+  const [workerLocation, setWorkerLocation] = useState('')
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     const savedName = localStorage.getItem('kazilen_professional_name') || localStorage.getItem('worker_name') || ''
     const savedPhone = localStorage.getItem('user_phone') || localStorage.getItem('phone') || ''
+    const savedLoc = localStorage.getItem('worker_location_area') || ''
 
     if (savedName || savedPhone) {
       setWorkerProfile({ full_name: savedName, phone_number: savedPhone })
+    }
+    if (savedLoc) {
+      setWorkerLocation(savedLoc)
     }
 
     if (!token) return
@@ -46,6 +54,11 @@ export default function ProfilePage() {
           })
           if (data.full_name) localStorage.setItem('kazilen_professional_name', data.full_name)
           if (data.phone_number) localStorage.setItem('user_phone', data.phone_number)
+          if (data.location && data.location.area) {
+            const locStr = `${data.location.area}, ${data.location.city || 'Nagpur'}`
+            setWorkerLocation(locStr)
+            localStorage.setItem('worker_location_area', locStr)
+          }
         }
       })
       .catch((e) => console.error('Failed to load profile:', e))
@@ -119,6 +132,13 @@ export default function ProfilePage() {
           />
 
           <ProfileItem
+            icon={<MapPin size={18} className="text-[#ff8a4c]" />}
+            label="Operational Base Location"
+            sub={workerLocation ? `Operating Base: ${workerLocation}` : 'Update your live GPS dispatch location & operating area'}
+            onClick={() => setIsLocationModalOpen(true)}
+          />
+
+          <ProfileItem
             icon={<Clock size={18} className="text-[#ff8a4c]" />}
             label="Work Schedule & Dead Hours"
             sub="Configure daily break / dead hours and weekly full days off"
@@ -168,6 +188,15 @@ export default function ProfilePage() {
           </button>
         </div>
       </main>
+
+      <WorkerLocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onLocationUpdated={(loc) => {
+          const locStr = loc.area ? `${loc.area}, ${loc.city || 'Nagpur'}` : 'Nagpur, MH'
+          setWorkerLocation(locStr)
+        }}
+      />
 
       <BottomNav />
     </div>
