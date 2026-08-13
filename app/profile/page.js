@@ -14,7 +14,8 @@ import {
   Settings,
   ShieldCheck,
   Zap,
-  CreditCard
+  CreditCard,
+  Clock
 } from 'lucide-react'
 import { API_BASE_URL } from '@/lib/api'
 
@@ -115,6 +116,13 @@ export default function ProfilePage() {
             label="My Offered Service Skills"
             sub="Select categories (Electrician, Fan Repair, Wiring) for jobs"
             onClick={() => router.push('/my-services')}
+          />
+
+          <ProfileItem
+            icon={<Clock size={18} className="text-[#ff8a4c]" />}
+            label="Work Schedule & Dead Hours"
+            sub="Configure daily break / dead hours and weekly full days off"
+            onClick={() => router.push('/profile/availability')}
           />
 
           <ProfileItem
