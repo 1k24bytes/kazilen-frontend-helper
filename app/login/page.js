@@ -45,7 +45,11 @@ export default function LoginPage() {
 				return;
 			}
 
-			router.push(`/verify?phone=${encodeURIComponent(phone)}`);
+			const referralCode = typeof window !== "undefined"
+				? new URLSearchParams(window.location.search).get("ref")
+				: null;
+			const referralQuery = referralCode ? `&ref=${encodeURIComponent(referralCode)}` : "";
+			router.push(`/verify?phone=${encodeURIComponent(phone)}${referralQuery}`);
 		} catch (e) {
 			alert(`Failed to check phone: ${e?.message ?? e}`);
 		} finally {

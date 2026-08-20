@@ -9,6 +9,7 @@ import { API_BASE_URL } from '@/lib/api'
 export default function Header() {
   const router = useRouter()
   const [online, setOnline] = useState(true)
+  const [toggleLoading, setToggleLoading] = useState(false)
   const [partnerName, setPartnerName] = useState('Partner')
   const [locationArea, setLocationArea] = useState('Nagpur, MH')
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
@@ -20,10 +21,6 @@ export default function Header() {
     const savedLoc = localStorage.getItem('worker_location_area')
     if (savedLoc) setLocationArea(savedLoc)
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('isOnline', online ? 'true' : 'false')
-  }, [online])
 
   useEffect(() => {
     try {
@@ -44,6 +41,10 @@ export default function Header() {
       .then((data) => {
         if (data) {
           if (data.full_name) setPartnerName(data.full_name)
+          if (data.is_online !== undefined) {
+            setOnline(Boolean(data.is_online))
+            localStorage.setItem('isOnline', data.is_online ? 'true' : 'false')
+          }
           if (data.location && data.location.area) {
             const displayLoc = `${data.location.area}, ${data.location.city || 'Nagpur'}`
             setLocationArea(displayLoc)
@@ -54,7 +55,48 @@ export default function Header() {
       .catch(() => {})
   }, [])
 
-  const toggle = () => setOnline((prev) => !prev)
+  const toggle = async () => {
+    if (toggleLoading) return
+    const nextState = !online
+    setOnline(nextState)
+    localStorage.setItem('isOnline', nextState ? 'true' : 'false')
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('worker_online_status_changed', { detail: { is_online: nextState } }))
+    }
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+    if (!token) return
+
+    try {
+      setToggleLoading(true)
+      const res = await fetch(`${API_BASE_URL}/users/me/online`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_online: nextState })
+      })
+      if (!res.ok) {
+        setOnline(!nextState)
+        localStorage.setItem('isOnline', !nextState ? 'true' : 'false')
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('worker_online_status_changed', { detail: { is_online: !nextState } }))
+        }
+        alert('Failed to update online status on the server. Please try again.')
+      }
+    } catch (e) {
+      setOnline(!nextState)
+      localStorage.setItem('isOnline', !nextState ? 'true' : 'false')
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('worker_online_status_changed', { detail: { is_online: !nextState } }))
+      }
+      alert('Network error while updating online status.')
+    } finally {
+      setToggleLoading(false)
+    }
+  }
 
   return (
     <>

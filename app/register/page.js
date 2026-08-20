@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { ArrowLeft, User, Calendar, Users, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, User, Calendar, Users, CheckCircle2, Gift } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_URL } from "@/lib/api";
 
@@ -9,11 +9,13 @@ function CreateAccountClient() {
   const router = useRouter();
   const params = useSearchParams();
   const phoneFromQuery = params.get("phone");
+  const referralCodeFromQuery = params.get("ref") || "";
 
   const [phoneNo] = useState(phoneFromQuery || "");
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("Male");
+  const [referralCode, setReferralCode] = useState(referralCodeFromQuery.toUpperCase().slice(0, 6));
   const [touched, setTouched] = useState({ name: false });
   const [loading, setLoading] = useState(false);
 
@@ -34,6 +36,7 @@ function CreateAccountClient() {
         role: "worker",
         dob: dob || null,
         gender: gender || null,
+        referral_code: referralCode.trim() || null,
       };
 
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -155,6 +158,25 @@ function CreateAccountClient() {
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Referral Code */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Referral Code <span className="text-slate-400 normal-case tracking-normal font-medium">(optional)</span>
+            </label>
+            <div className="relative">
+              <Gift size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                maxLength={6}
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value.replace(/[^a-z0-9]/gi, "").toUpperCase())}
+                placeholder="e.g. A1B2C3"
+                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm font-bold tracking-wider text-slate-900 uppercase focus:outline-none focus:border-[#ff8a4c] focus:ring-1 focus:ring-[#ff8a4c] transition placeholder:normal-case placeholder:font-normal placeholder:tracking-normal"
+              />
+            </div>
+            <p className="text-xs text-slate-500 mt-1.5">Use a partner&apos;s code to support their referral points.</p>
           </div>
 
           <button

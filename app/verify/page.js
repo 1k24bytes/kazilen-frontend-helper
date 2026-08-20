@@ -10,6 +10,7 @@ function VerifyOtpClient() {
 	const params = useSearchParams();
 	const rawPhone = params.get("phone");
 	const phone = rawPhone ? rawPhone.replace(/\D/g, "") : "";
+	const referralCode = params.get("ref");
 
 	const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
 	const [seconds, setSeconds] = useState(30);
@@ -78,7 +79,8 @@ function VerifyOtpClient() {
 			}
 
 			if (data.status === "needs_registration") {
-				router.push(`/register?phone=${encodeURIComponent(cleanPhone)}`);
+				const referralQuery = referralCode ? `&ref=${encodeURIComponent(referralCode)}` : "";
+				router.push(`/register?phone=${encodeURIComponent(cleanPhone)}${referralQuery}`);
 			} else if (data.status === "success" && data.access_token) {
 				localStorage.setItem("access_token", data.access_token);
 				router.push("/");

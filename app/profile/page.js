@@ -16,7 +16,10 @@ import {
   Zap,
   CreditCard,
   Clock,
-  MapPin
+  MapPin,
+  Gift,
+  Copy,
+  Check
 } from 'lucide-react'
 import WorkerLocationModal from '../components/WorkerLocationModal'
 import { API_BASE_URL } from '@/lib/api'
@@ -24,6 +27,8 @@ import { API_BASE_URL } from '@/lib/api'
 export default function ProfilePage() {
   const router = useRouter()
   const [workerProfile, setWorkerProfile] = useState({ full_name: '', phone_number: '' })
+  const [referral, setReferral] = useState({ code: '', points: 0 })
+  const [copied, setCopied] = useState(false)
   const [workerLocation, setWorkerLocation] = useState('')
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
 
@@ -54,6 +59,7 @@ export default function ProfilePage() {
           })
           if (data.full_name) localStorage.setItem('kazilen_professional_name', data.full_name)
           if (data.phone_number) localStorage.setItem('user_phone', data.phone_number)
+          setReferral({ code: data.referral_code || '', points: data.referral_points || 0 })
           if (data.location && data.location.area) {
             const locStr = `${data.location.area}, ${data.location.city || 'Nagpur'}`
             setWorkerLocation(locStr)
@@ -63,6 +69,17 @@ export default function ProfilePage() {
       })
       .catch((e) => console.error('Failed to load profile:', e))
   }, [])
+
+  const referralLink = referral.code && typeof window !== 'undefined'
+    ? `${window.location.origin}/login?ref=${encodeURIComponent(referral.code)}`
+    : ''
+
+  const copyReferralLink = async () => {
+    if (!referralLink) return
+    await navigator.clipboard.writeText(referralLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const handleLogout = async () => {
     if (typeof window !== 'undefined') {
@@ -114,6 +131,46 @@ export default function ProfilePage() {
             Edit
           </button>
         </div>
+
+        {/* Worker Referral & Network Rewards Card */}
+        <section className="bg-white rounded-md border border-slate-200 p-5 shadow-2xs space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-sm bg-[#fff4ed] text-[#ff8a4c] shrink-0">
+                <Gift size={18} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Partner Referral Program</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-md">
+                  Invite fellow specialists to join Kazilen. Earn 1 referral point whenever a new partner registers with your code.
+                </p>
+              </div>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-lg font-bold text-slate-900">{referral.points}</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Points</p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-col sm:flex-row gap-2">
+            <div className="flex-1 flex items-center justify-between bg-slate-50 border border-slate-200 rounded-sm px-3.5 py-2.5">
+              <span className="text-xs font-medium text-slate-500">Your Referral Code:</span>
+              <span className="font-mono text-sm font-bold tracking-[0.2em] text-slate-900">
+                {referral.code || 'Generating…'}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={copyReferralLink}
+              disabled={!referralLink}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm bg-[#ff8a4c] hover:bg-[#f07432] text-white text-xs font-bold transition disabled:bg-slate-200 disabled:text-slate-400 cursor-pointer shadow-2xs"
+            >
+              {copied ? <Check size={15} /> : <Copy size={15} />}
+              <span>{copied ? 'Copied' : 'Copy Invite Link'}</span>
+            </button>
+          </div>
+        </section>
 
         {/* Practical Options List */}
         <div className="bg-white rounded-md border border-slate-200 shadow-2xs divide-y divide-slate-100 overflow-hidden">

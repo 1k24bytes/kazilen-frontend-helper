@@ -40,8 +40,24 @@ function WorkerDashboardContent() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
 
   const defaultPlan = plansConfig.defaultPlan;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("isOnline");
+      if (saved !== null) setIsOnline(saved === "true");
+
+      const handleStatusChange = (e) => {
+        if (e.detail && e.detail.is_online !== undefined) {
+          setIsOnline(Boolean(e.detail.is_online));
+        }
+      };
+      window.addEventListener("worker_online_status_changed", handleStatusChange);
+      return () => window.removeEventListener("worker_online_status_changed", handleStatusChange);
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -212,6 +228,21 @@ function WorkerDashboardContent() {
           </button>
 
         </section>
+
+        {/* Offline Status Alert Banner */}
+        {!isOnline && (
+          <div className="bg-slate-900 text-white rounded-md p-4 shadow-sm flex items-center justify-between gap-3 border border-slate-800">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-slate-100">You are currently OFFLINE</p>
+                <p className="text-[11px] text-slate-400">
+                  You are hidden from customer marketplace searches and will not receive new dispatch requests. Toggle to ONLINE above to resume.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Live Dispatch Feed Module */}
         <LiveDispatchFeed />

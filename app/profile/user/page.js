@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import BackHeader from '../components/BackHeader'
 import Header from '../../components/Header'
+import BottomNav from '../../components/BottomNav'
 import { User, Phone, Calendar, Users, ShieldCheck, Save, Check } from 'lucide-react'
 import { API_BASE_URL } from '@/lib/api'
 
@@ -223,6 +224,8 @@ export default function WorkerUserProfilePage() {
 
         </form>
       </main>
+
+      <BottomNav />
     </div>
   )
 }
