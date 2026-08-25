@@ -31,7 +31,9 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Partner Navigation" className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-md">
+    <>
+      <div aria-hidden="true" className="h-16" />
+      <nav aria-label="Partner Navigation" className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-md">
       <div className="max-w-4xl mx-auto px-2 sm:px-6">
         <div className="flex items-center justify-around">
           {NAV_ITEMS.map((item) => {
@@ -73,5 +75,6 @@ export default function BottomNav() {
         </div>
       </div>
     </nav>
+    </>
   );
 }

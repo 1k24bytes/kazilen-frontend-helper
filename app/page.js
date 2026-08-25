@@ -18,7 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, apiFetch } from "@/lib/api";
 import Header from "./components/Header";
 import MyProgress from "./components/MyProgress";
 import OrderPlanCard from "./components/OrderPlanCard";
@@ -60,17 +60,10 @@ function WorkerDashboardContent() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
-
     const fetchDashboard = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/workers/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiFetch(`${API_BASE_URL}/workers/dashboard`, {
+                  });
 
         if (response.ok) {
           const json = await response.json();
@@ -137,7 +130,7 @@ function WorkerDashboardContent() {
   const activeServicesCount = data?.active_services_count || 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-24 font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         
         {/* Top Header Bar */}

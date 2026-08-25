@@ -22,7 +22,7 @@ import {
   Check
 } from 'lucide-react'
 import WorkerLocationModal from '../components/WorkerLocationModal'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -33,7 +33,6 @@ export default function ProfilePage() {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
     const savedName = localStorage.getItem('kazilen_professional_name') || localStorage.getItem('worker_name') || ''
     const savedPhone = localStorage.getItem('user_phone') || localStorage.getItem('phone') || ''
     const savedLoc = localStorage.getItem('worker_location_area') || ''
@@ -45,10 +44,8 @@ export default function ProfilePage() {
       setWorkerLocation(savedLoc)
     }
 
-    if (!token) return
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+    apiFetch(`${API_BASE_URL}/users/me`, {
+      headers: { }
     })
       .then((res) => res.ok ? res.json() : null)
       .then((data) => {
@@ -82,6 +79,11 @@ export default function ProfilePage() {
   }
 
   const handleLogout = async () => {
+    try {
+      await apiFetch(`${API_BASE_URL}/auth/logout`, { method: 'POST' })
+    } catch {
+      // ignore network errors, still clear local state
+    }
     if (typeof window !== 'undefined') {
       localStorage.clear()
     }
@@ -100,7 +102,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <BackHeader title={displayName} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">

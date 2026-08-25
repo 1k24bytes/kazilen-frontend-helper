@@ -12,7 +12,7 @@ import {
   Smartphone,
   Zap,
 } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, apiFetch } from '@/lib/api';
 import CompletionReviewModal from '@/app/components/CompletionReviewModal';
 
 // ---------------------------------------------------------------------------
@@ -92,15 +92,10 @@ export default function JobDetailPage() {
   const [reviewStatus, setReviewStatus] = useState(null);
   const [reviewClosed, setReviewClosed] = useState(false);
 
-  const token = () => localStorage.getItem('access_token');
-
   const fetchBooking = async () => {
-    const t = token();
-    if (!t) { router.push('/login'); return; }
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        headers: { Authorization: `Bearer ${t}` },
-      });
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+              });
       if (res.ok) {
         const data = await res.json();
         setBooking(data);
@@ -124,9 +119,8 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     if (!bookingId || booking?.status !== 'completed') return;
-    fetch(`${API_BASE_URL}/reviews/bookings/${bookingId}/status`, {
-      headers: { Authorization: `Bearer ${token()}` },
-    })
+    apiFetch(`${API_BASE_URL}/reviews/bookings/${bookingId}/status`, {
+          })
       .then((response) => response.ok ? response.json() : null)
       .then((data) => data && setReviewStatus(data))
       .catch(() => {});
@@ -137,10 +131,9 @@ export default function JobDetailPage() {
     setError('');
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/generate-start-otp`, {
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}/generate-start-otp`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+              });
       if (res.ok) {
         setStartOtpReady(true);
         // Flash "Sent!" confirmation for 2s
@@ -158,9 +151,9 @@ export default function JobDetailPage() {
   const handleVerifyStartOtp = async (otp) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/verify-start-otp`, {
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}/verify-start-otp`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp }),
       });
       const d = await res.json();
@@ -175,10 +168,9 @@ export default function JobDetailPage() {
     setError('');
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/generate-end-otp`, {
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}/generate-end-otp`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token()}` },
-      });
+              });
       if (res.ok) {
         setEndOtpReady(true);
         setResendEndFlash(true);
@@ -195,9 +187,9 @@ export default function JobDetailPage() {
   const handleVerifyEndOtp = async (otp) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/verify-end-otp`, {
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}/verify-end-otp`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp }),
       });
       const d = await res.json();

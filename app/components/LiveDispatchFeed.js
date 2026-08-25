@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Clock, ChevronRight, CheckCircle2, Loader2, AlertCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { API_BASE_URL } from '@/lib/api';
+import { API_BASE_URL, apiFetch } from '@/lib/api';
 
 const STATUS_CONFIG = {
   pending:     { label: 'Awaiting Action',  className: 'bg-slate-100 text-slate-600 border-slate-200' },
@@ -29,11 +29,10 @@ export default function LiveDispatchFeed() {
   const [accepting, setAccepting] = useState(null); // booking id being accepted
 
   // Fetch bookings — called on mount and on an interval
-  const fetchBookings = async (token) => {
+  const fetchBookings = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/worker/pending`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiFetch(`${API_BASE_URL}/bookings/worker/pending`, {
+              });
       if (res.ok) {
         const data = await res.json();
         setBookings(data.bookings || []);
@@ -51,24 +50,18 @@ export default function LiveDispatchFeed() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-
-    fetchBookings(token);
-    const interval = setInterval(() => fetchBookings(token), 5000);
+    fetchBookings();
+    const interval = setInterval(() => fetchBookings(), 5000);
     return () => clearInterval(interval);
   }, []);
 
   // Accept a pending booking
   const handleAccept = async (bookingId) => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
     setAccepting(bookingId);
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings/${bookingId}/accept`, {
+      const res = await apiFetch(`${API_BASE_URL}/bookings/${bookingId}/accept`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+              });
       const data = await res.json();
       if (res.ok && data.status === 'accepted') {
         // Navigate to the job detail page to manage OTPs

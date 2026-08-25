@@ -6,7 +6,7 @@ import BackHeader from '../components/BackHeader'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import { User, Phone, Calendar, Users, ShieldCheck, Save, Check } from 'lucide-react'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 export default function WorkerUserProfilePage() {
   const router = useRouter()
@@ -23,7 +23,6 @@ export default function WorkerUserProfilePage() {
   })
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
     const savedPhone = localStorage.getItem('user_phone') || localStorage.getItem('phone') || ''
     const savedName = localStorage.getItem('kazilen_professional_name') || localStorage.getItem('professionalName') || ''
 
@@ -44,15 +43,10 @@ export default function WorkerUserProfilePage() {
       role: 'worker'
     })
 
-    if (!token) {
-      setLoading(false)
-      return
-    }
-
     async function fetchUserProfile() {
       try {
-        const res = await fetch(`${API_BASE_URL}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await apiFetch(`${API_BASE_URL}/users/me`, {
+          headers: { }
         })
         if (res.ok) {
           const data = await res.json()
@@ -88,25 +82,20 @@ export default function WorkerUserProfilePage() {
     if (userInfo.full_name) {
       localStorage.setItem('kazilen_professional_name', userInfo.full_name.trim())
     }
-
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      try {
-        await fetch(`${API_BASE_URL}/users/me`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            full_name: userInfo.full_name,
-            dob: userInfo.dob,
-            gender: userInfo.gender
-          })
+    try {
+      await apiFetch(`${API_BASE_URL}/users/me`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: userInfo.full_name,
+          dob: userInfo.dob,
+          gender: userInfo.gender
         })
-      } catch (err) {
-        console.error('Save error:', err)
-      }
+      })
+    } catch (err) {
+      console.error('Save error:', err)
     }
 
     setSavedSuccess(true)

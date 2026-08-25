@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, MapPin } from 'lucide-react'
 import WorkerLocationModal from './WorkerLocationModal'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 export default function Header() {
   const router = useRouter()
@@ -31,11 +31,8 @@ export default function Header() {
       if (name) setPartnerName(name.trim())
     } catch {}
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-    if (!token) return
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+    apiFetch(`${API_BASE_URL}/users/me`, {
+      headers: { }
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -65,16 +62,12 @@ export default function Header() {
       window.dispatchEvent(new CustomEvent('worker_online_status_changed', { detail: { is_online: nextState } }))
     }
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-    if (!token) return
-
     try {
       setToggleLoading(true)
-      const res = await fetch(`${API_BASE_URL}/users/me/online`, {
+      const res = await apiFetch(`${API_BASE_URL}/users/me/online`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ is_online: nextState })
       })

@@ -3,18 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { API_BASE_URL, apiFetch } from "@/lib/api";
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      router.replace("/login");
-    } else {
-      setAuthorized(true);
-    }
+    let active = true;
+    apiFetch(`${API_BASE_URL}/users/me`).then((res) => {
+      if (!active) return;
+      if (res.ok) {
+        setAuthorized(true);
+      } else {
+        router.replace("/login");
+      }
+    }).catch(() => {
+      if (active) router.replace("/login");
+    });
+    return () => {
+      active = false;
+    };
   }, [router]);
 
   if (!authorized) {

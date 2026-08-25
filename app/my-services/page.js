@@ -21,7 +21,7 @@ import {
   Check,
   Zap
 } from 'lucide-react'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 export default function MyServicesPage() {
   const router = useRouter()
@@ -64,7 +64,6 @@ export default function MyServicesPage() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
 
     try {
       const savedRole = localStorage.getItem('worker_trade_role')
@@ -122,12 +121,10 @@ export default function MyServicesPage() {
       setServicesState(getInitialState())
     }
 
-    if (!token) return
-
     async function fetchDbProfile() {
       try {
-        const res = await fetch(`${API_BASE_URL}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await apiFetch(`${API_BASE_URL}/users/me`, {
+          headers: { }
         })
         if (res.ok) {
           const data = await res.json()
@@ -238,21 +235,11 @@ export default function MyServicesPage() {
     } catch (e) {
       console.error('Failed to save locally:', e)
     }
-
-    const token = localStorage.getItem('access_token')
-    if (!token) {
-      alert('You must be logged in to save services. Redirecting to login...')
-      router.push('/login')
-      setSaving(false)
-      return
-    }
-
     try {
-      const res = await fetch(`${API_BASE_URL}/users/me/services`, {
+      const res = await apiFetch(`${API_BASE_URL}/users/me/services`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ offered_services: configuredServices })
       })
@@ -289,7 +276,7 @@ export default function MyServicesPage() {
   const activeCount = Object.keys(servicesState).filter((id) => servicesState[id]?.enabled).length
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Header />
       <BackHeader title="My Offered Services & Rates" />
 

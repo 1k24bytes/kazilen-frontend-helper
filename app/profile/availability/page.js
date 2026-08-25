@@ -20,7 +20,7 @@ import {
   Moon,
   Sparkles
 } from 'lucide-react'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 const ALL_WEEKDAYS = [
   'Monday',
@@ -72,7 +72,6 @@ export default function WorkerAvailabilityPage() {
   const [newLabel, setNewLabel] = useState('Lunch / Rest Break')
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
     const savedAvail = localStorage.getItem('worker_availability_data')
 
     if (savedAvail) {
@@ -87,13 +86,8 @@ export default function WorkerAvailabilityPage() {
       }
     }
 
-    if (!token) {
-      setLoading(false)
-      return
-    }
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+    apiFetch(`${API_BASE_URL}/users/me`, {
+      headers: { }
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -193,25 +187,20 @@ export default function WorkerAvailabilityPage() {
     }
 
     localStorage.setItem('worker_availability_data', JSON.stringify(payload))
+    try {
+      const res = await apiFetch(`${API_BASE_URL}/users/me/availability`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      })
 
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      try {
-        const res = await fetch(`${API_BASE_URL}/users/me/availability`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        })
-
-        if (!res.ok) {
-          throw new Error('Failed to update work schedule on server.')
-        }
-      } catch (err) {
-        console.error('Save availability error:', err)
+      if (!res.ok) {
+        throw new Error('Failed to update work schedule on server.')
       }
+    } catch (err) {
+      console.error('Save availability error:', err)
     }
 
     setSavedSuccess(true)
@@ -246,7 +235,7 @@ export default function WorkerAvailabilityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <Header />
       <BackHeader title="Work Schedule & Dead Hours" />
 

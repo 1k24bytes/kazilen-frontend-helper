@@ -12,7 +12,7 @@ import {
   Building2,
   Compass
 } from 'lucide-react'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL, apiFetch } from '@/lib/api'
 
 export default function WorkerLocationModal({ isOpen, onClose, onLocationUpdated }) {
   const [locating, setLocating] = useState(false)
@@ -54,11 +54,8 @@ export default function WorkerLocationModal({ isOpen, onClose, onLocationUpdated
     } catch (e) {}
 
     // Also fetch latest profile from backend
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-    if (!token) return
-
-    fetch(`${API_BASE_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+    apiFetch(`${API_BASE_URL}/users/me`, {
+      headers: { }
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -98,7 +95,7 @@ export default function WorkerLocationModal({ isOpen, onClose, onLocationUpdated
 
         try {
           // OpenStreetMap Nominatim reverse geocoding
-          const response = await fetch(
+          const response = await apiFetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
             {
               headers: {
@@ -199,26 +196,21 @@ export default function WorkerLocationModal({ isOpen, onClose, onLocationUpdated
         localStorage.setItem('worker_location_coords', JSON.stringify(coords))
       }
     } catch (e) {}
+    try {
+      const res = await apiFetch(`${API_BASE_URL}/users/me/location`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      })
 
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-    if (token) {
-      try {
-        const res = await fetch(`${API_BASE_URL}/users/me/location`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        })
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}))
-          throw new Error(errData.detail || 'Failed to save location on server.')
-        }
-      } catch (err) {
-        console.error('Save location error:', err)
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.detail || 'Failed to save location on server.')
       }
+    } catch (err) {
+      console.error('Save location error:', err)
     }
 
     setSaving(false)

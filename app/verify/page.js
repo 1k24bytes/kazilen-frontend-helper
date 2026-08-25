@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, apiFetch } from "@/lib/api";
 
 function VerifyOtpClient() {
 	const router = useRouter();
@@ -57,7 +57,7 @@ function VerifyOtpClient() {
 		try {
 			setLoading(true);
 
-			const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+			const response = await apiFetch(`${API_BASE_URL}/auth/verify-otp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
@@ -81,8 +81,7 @@ function VerifyOtpClient() {
 			if (data.status === "needs_registration") {
 				const referralQuery = referralCode ? `&ref=${encodeURIComponent(referralCode)}` : "";
 				router.push(`/register?phone=${encodeURIComponent(cleanPhone)}${referralQuery}`);
-			} else if (data.status === "success" && data.access_token) {
-				localStorage.setItem("access_token", data.access_token);
+			} else if (data.status === "success") {
 				router.push("/");
 			}
 		} catch (e) {
@@ -99,7 +98,7 @@ function VerifyOtpClient() {
 			setResending(true);
 			const cleanPhone = phone.replace(/\D/g, "");
 
-			const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+			const response = await apiFetch(`${API_BASE_URL}/auth/send-otp`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ phone_number: `91${cleanPhone}` }),

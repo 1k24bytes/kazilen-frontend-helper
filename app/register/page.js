@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { ArrowLeft, User, Calendar, Users, CheckCircle2, Gift } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, apiFetch } from "@/lib/api";
 
 function CreateAccountClient() {
   const router = useRouter();
@@ -39,7 +39,7 @@ function CreateAccountClient() {
         referral_code: referralCode.trim() || null,
       };
 
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await apiFetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -52,8 +52,7 @@ function CreateAccountClient() {
         return;
       }
 
-      if (data.status === "success" && data.access_token) {
-        localStorage.setItem("access_token", data.access_token);
+      if (data.status === "success") {
         alert("Worker account created successfully!");
         router.replace("/");
       }
