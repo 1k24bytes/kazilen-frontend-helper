@@ -66,6 +66,10 @@ export default function LiveDispatchFeed() {
       if (res.ok && data.status === 'accepted') {
         // Navigate to the job detail page to manage OTPs
         router.push(`/jobs/${bookingId}`);
+      } else if (res.status === 402) {
+        if (confirm(`${data.detail || 'Booking limit reached.'}\n\nOpen membership plans now?`)) {
+          router.push('/profile/recharge');
+        }
       } else {
         alert(data.detail || 'Could not accept booking.');
       }

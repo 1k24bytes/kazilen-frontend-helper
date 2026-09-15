@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import BackHeader from '../profile/components/BackHeader'
 import Header from '../components/Header'
 import BottomNav from '../components/BottomNav'
-import servicesData from '../data/services.json'
+import seedData from '../data/services.json'
+import { fetchCatalog } from '@/lib/catalog'
 import {
   Save,
   CheckCircle2,
@@ -26,8 +27,36 @@ import { API_BASE_URL, apiFetch } from '@/lib/api'
 export default function MyServicesPage() {
   const router = useRouter()
 
-  const categories = servicesData.categories || []
-  const allSubCategories = servicesData.subCategories || []
+  const [catalog, setCatalog] = useState(null)
+  useEffect(() => {
+    let active = true
+    fetchCatalog().then((data) => {
+      if (!active) return
+      if (data.categories?.length || data.subCategories?.length) setCatalog(data)
+    })
+    return () => { active = false }
+  }, [])
+
+  const toUiSub = (s) => ({
+    id: s.id,
+    categoryId: s.categoryId || s.category_id,
+    label: s.label,
+    tag: s.tag,
+    default_price_type: s.default_price_type || s.price_type || 'fixed',
+    default_fixed_price: s.default_fixed_price ?? s.fixed_price ?? 249,
+    default_price_per_hour: s.default_price_per_hour ?? s.price_per_hour ?? 199,
+    default_description: s.default_description || s.description || '',
+    image: s.image,
+  })
+  const toUiCat = (c) => ({
+    id: c.id,
+    name: c.name,
+    desc: c.desc || c.description || '',
+  })
+  const seedCats = seedData.categories || []
+  const seedSubs = seedData.subCategories || []
+  const categories = (catalog?.categories?.length ? catalog.categories : seedCats).map(toUiCat)
+  const allSubCategories = (catalog?.subCategories?.length ? catalog.subCategories : seedSubs).map(toUiSub)
 
   // Selected trade role (default "Electrician")
   const [selectedRole, setSelectedRole] = useState('Electrician')

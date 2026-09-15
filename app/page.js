@@ -90,6 +90,7 @@ function WorkerDashboardContent() {
     reviews_count: 0,
     recent_reviews: [],
     active_services_count: 0,
+    membership: null,
     plan: {
       completed: 0,
       totalLabel: String(defaultPlan.totalJobs),
@@ -374,20 +375,21 @@ function WorkerDashboardContent() {
 
         {/* Active Order Quota & Plan Status */}
         <OrderPlanCard
-          completed={data?.plan?.completed || 0}
-          totalLabel={data?.plan?.totalLabel || String(defaultPlan.totalJobs)}
-          price={data?.plan?.price || defaultPlan.price}
-          timeLeft={data?.plan?.timeLeft || defaultPlan.timeLeft}
+          completed={data?.plan?.completed ?? data?.membership?.total_used ?? 0}
+          totalLabel={data?.plan?.totalLabel || String(data?.membership?.total_limit ?? defaultPlan.totalJobs)}
+          price={data?.plan?.price || data?.membership?.plan_name || 'Free trial'}
+          timeLeft={data?.plan?.timeLeft || (data?.membership?.quota_exhausted ? 'Quota exhausted — subscribe' : `${data?.membership?.total_remaining ?? 2} bookings left`)}
+          planName={data?.plan?.name || data?.membership?.plan_name}
+          exhausted={Boolean(data?.membership?.quota_exhausted)}
+          onSubscribe={() => router.push('/profile/recharge')}
         />
 
         {/* Recharge Subscription Module */}
         <PlansCard
           price={data?.recharge?.price || defaultPlan.price}
           validityDays={data?.recharge?.validityDays || defaultPlan.validityDays}
-          orderType={data?.recharge?.orderType || defaultPlan.orderType}
-          onRecharge={() => {
-            alert(`Recharge payment window opening for ₹${defaultPlan.price} plan... Select UPI/Card to extend 10 job dispatches.`);
-          }}
+          orderType={data?.recharge?.orderType || data?.membership?.plan_name || defaultPlan.orderType}
+          onRecharge={() => router.push('/profile/recharge')}
         />
 
       </main>
