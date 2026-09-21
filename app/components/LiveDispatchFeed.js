@@ -140,6 +140,20 @@ export default function LiveDispatchFeed() {
                         <MapPin size={11} className="shrink-0" /> {b.address}
                       </p>
                     )}
+                    {b.customer_phone && (
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <p className="text-xs font-bold text-slate-800 truncate">
+                          {b.customer_name ? `${b.customer_name} · ` : ''}{b.customer_phone}
+                        </p>
+                        <a
+                          href={`tel:${b.customer_phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="px-2.5 py-1 text-[11px] font-bold bg-white border border-slate-200 text-slate-700 rounded-sm hover:bg-slate-50 transition shrink-0"
+                        >
+                          Call
+                        </a>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => router.push(`/jobs/${b.id}`)}

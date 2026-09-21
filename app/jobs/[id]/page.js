@@ -250,6 +250,27 @@ export default function JobDetailPage() {
               {booking.amount && <InfoRow label="Rate" value={`₹${booking.amount}`} />}
             </div>
 
+            {/* Customer Contact — phone is revealed by backend only after accept */}
+            <div className="bg-white rounded-md border border-slate-200 shadow-2xs p-4">
+              <p className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Customer Contact</p>
+              <InfoRow label="Customer" value={booking.customer_name || 'Customer'} />
+              {booking.customer_phone ? (
+                <div className="flex items-center justify-between gap-2 pt-2">
+                  <span className="text-xs font-bold text-slate-800">{booking.customer_phone}</span>
+                  <a
+                    href={`tel:${booking.customer_phone}`}
+                    className="px-4 py-2 bg-[#ff8a4c] hover:bg-[#f07432] text-white text-xs font-bold rounded-sm transition"
+                  >
+                    Call Customer
+                  </a>
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500 leading-relaxed pt-1">
+                  Customer contact appears here after you accept the job.
+                </p>
+              )}
+            </div>
+
             {/* ----------------------------------------------------------------
                 ACCEPTED → worker arrives, generates OTP in customer portal, enters it
             ---------------------------------------------------------------- */}
