@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ff8a4c" />
+  <title>Kazilen Partner — Offline</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+    .wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 24px; max-width: 380px; text-align: center; }
+    .badge { display: inline-block; background: #ff8a4c; color: #fff; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 4px 10px; margin-bottom: 12px; }
+    h1 { font-size: 18px; margin: 0 0 8px; }
+    p { font-size: 13px; color: #64748b; margin: 0 0 16px; line-height: 1.6; }
+    button { background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 8px 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <span class="badge">Kazilen Partner</span>
+      <h1>You are offline</h1>
+      <p>Please check your internet connection. Your job queue will reappear once you are back online.</p>
+      <button onclick="window.location.reload()">Try again</button>
+    </div>
+  </div>
+</body>
+</html>
