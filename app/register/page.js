@@ -53,7 +53,11 @@ function CreateAccountClient() {
       }
 
       if (data.status === "success") {
-        alert("Worker account created successfully!");
+        if (data.verification_status === "pending") {
+          alert("Worker account created! Your profile is in review and will go live once the admin approves it.");
+        } else {
+          alert("Worker account created successfully!");
+        }
         router.replace("/");
       }
     } catch (err) {

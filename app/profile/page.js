@@ -31,6 +31,10 @@ export default function ProfilePage() {
   const [copied, setCopied] = useState(false)
   const [workerLocation, setWorkerLocation] = useState('')
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
+  const [verificationStatus, setVerificationStatus] = useState('approved')
+  const [profilePhoto, setProfilePhoto] = useState('')
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [photoError, setPhotoError] = useState('')
 
   useEffect(() => {
     const savedName = localStorage.getItem('kazilen_professional_name') || localStorage.getItem('worker_name') || ''
@@ -54,6 +58,8 @@ export default function ProfilePage() {
             full_name: data.full_name || savedName || '',
             phone_number: data.phone_number || savedPhone || ''
           })
+          setVerificationStatus(data.verification_status || 'approved')
+          setProfilePhoto(data.profile_photo || '')
           if (data.full_name) localStorage.setItem('kazilen_professional_name', data.full_name)
           if (data.phone_number) localStorage.setItem('user_phone', data.phone_number)
           setReferral({ code: data.referral_code || '', points: data.referral_points || 0 })
@@ -90,6 +96,32 @@ export default function ProfilePage() {
     window.location.href = '/login'
   }
 
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPhotoError('')
+    setUploadingPhoto(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await apiFetch(`${API_BASE_URL}/users/me/photo`, {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setPhotoError(data.detail || 'Photo upload failed')
+        return
+      }
+      setProfilePhoto(data.url || '')
+    } catch (err) {
+      setPhotoError(err?.message || 'Photo upload failed')
+    } finally {
+      setUploadingPhoto(false)
+      e.target.value = ''
+    }
+  }
+
   const displayName = workerProfile.full_name?.trim() || 'Service Partner'
   const initial = (workerProfile.full_name?.trim() || 'P').charAt(0).toUpperCase()
   const formatPhone = (raw) => {
@@ -106,12 +138,47 @@ export default function ProfilePage() {
       <BackHeader title={displayName} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        
+
+        {verificationStatus === 'pending' && (
+          <p className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-sm px-3 py-2">
+            Your profile is in review. You will appear in the customer marketplace once the admin approves your account.
+          </p>
+        )}
+        {verificationStatus === 'rejected' && (
+          <p className="text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-sm px-3 py-2">
+            Your profile was rejected by the admin. Please contact support to re-verify your account.
+          </p>
+        )}
+
         {/* Partner Info Header Card */}
         <div className="bg-white rounded-md border border-slate-200 p-6 shadow-2xs flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="w-12 h-12 rounded-sm bg-[#ff8a4c] text-white flex items-center justify-center font-bold text-lg shadow-2xs shrink-0">
-              {initial}
+            <div className="relative shrink-0">
+              {profilePhoto ? (
+                <img
+                  src={profilePhoto}
+                  alt={displayName}
+                  className="w-12 h-12 rounded-sm border border-slate-200 object-cover shadow-2xs"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-sm bg-[#ff8a4c] text-white flex items-center justify-center font-bold text-lg shadow-2xs">
+                  {initial}
+                </div>
+              )}
+              <label
+                htmlFor="worker-photo-upload"
+                className="absolute -bottom-1.5 -right-1.5 w-5 h-5 rounded-sm bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold cursor-pointer hover:bg-[#ff8a4c] transition"
+                title={uploadingPhoto ? 'Uploading…' : 'Upload profile photo'}
+              >
+                {uploadingPhoto ? '…' : '+'}
+              </label>
+              <input
+                id="worker-photo-upload"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -133,6 +200,11 @@ export default function ProfilePage() {
             Edit
           </button>
         </div>
+        {photoError && (
+          <p className="text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-sm px-3 py-2">
+            {photoError}
+          </p>
+        )}
 
         {/* Worker Referral & Network Rewards Card */}
         <section className="bg-white rounded-md border border-slate-200 p-5 shadow-2xs space-y-4">

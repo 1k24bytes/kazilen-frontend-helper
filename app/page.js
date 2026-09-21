@@ -133,9 +133,20 @@ function WorkerDashboardContent() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        
+
         {/* Top Header Bar */}
         <Header />
+
+        {data?.verification_status === "pending" && (
+          <p className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-sm px-3 py-2">
+            Your profile is in review — customers cannot see you yet. You will go live once the admin approves your account.
+          </p>
+        )}
+        {data?.verification_status === "rejected" && (
+          <p className="text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-sm px-3 py-2">
+            Your profile was rejected by the admin. Contact support to re-verify your account.
+          </p>
+        )}
 
         {/* Quick KPI Stat Cards Grid */}
         <section aria-label="Dashboard Metrics" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
