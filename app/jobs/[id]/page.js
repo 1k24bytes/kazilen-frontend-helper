@@ -10,6 +10,7 @@ import {
   AlertCircle,
   ArrowRight,
   Smartphone,
+  Navigation,
   Zap,
 } from 'lucide-react';
 import { API_BASE_URL, apiFetch } from '@/lib/api';
@@ -248,6 +249,17 @@ export default function JobDetailPage() {
               <InfoRow label="Time" value={booking.time_slot} />
               <InfoRow label="Address" value={booking.address} />
               {booking.amount && <InfoRow label="Rate" value={`₹${booking.amount}`} />}
+              {booking.address && (
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(booking.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-sm transition flex items-center justify-center gap-1.5"
+                >
+                  <Navigation size={13} />
+                  Get Directions on Map
+                </a>
+              )}
             </div>
 
             {/* Customer Contact — phone is revealed by backend only after accept */}
