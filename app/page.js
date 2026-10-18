@@ -255,6 +255,25 @@ function WorkerDashboardContent() {
         {/* Work Progress & Earnings Summary */}
         <MyProgress progressData={data?.progress} />
 
+        {/* Active Order Quota & Plan Status — directly below Work Progress */}
+        <OrderPlanCard
+          completed={data?.plan?.completed ?? data?.membership?.total_used ?? 0}
+          totalLabel={data?.plan?.totalLabel || String(data?.membership?.total_limit ?? defaultPlan.totalJobs)}
+          price={data?.plan?.price || data?.membership?.plan_name || 'Free trial'}
+          timeLeft={data?.plan?.timeLeft || (data?.membership?.quota_exhausted ? 'Quota exhausted — view plans' : `${data?.membership?.total_remaining ?? 2} bookings left`)}
+          planName={data?.plan?.name || data?.membership?.plan_name}
+          exhausted={Boolean(data?.membership?.quota_exhausted)}
+          onSubscribe={() => router.push('/profile/recharge')}
+        />
+
+        {/* Subscription Plan — active plan summary, full list lives on recharge page */}
+        <PlansCard
+          price={data?.recharge?.price || defaultPlan.price}
+          validityDays={data?.recharge?.validityDays || defaultPlan.validityDays}
+          orderType={data?.recharge?.orderType || data?.membership?.plan_name || defaultPlan.orderType}
+          onRecharge={() => router.push('/profile/recharge')}
+        />
+
         {/* Customer Reviews & Feedback Snapshot Card */}
         <section className="bg-white rounded-md border border-slate-200 p-5 shadow-2xs space-y-4">
           <div className="flex items-center justify-between">
@@ -383,25 +402,6 @@ function WorkerDashboardContent() {
             </Link>
           </div>
         </section>
-
-        {/* Active Order Quota & Plan Status */}
-        <OrderPlanCard
-          completed={data?.plan?.completed ?? data?.membership?.total_used ?? 0}
-          totalLabel={data?.plan?.totalLabel || String(data?.membership?.total_limit ?? defaultPlan.totalJobs)}
-          price={data?.plan?.price || data?.membership?.plan_name || 'Free trial'}
-          timeLeft={data?.plan?.timeLeft || (data?.membership?.quota_exhausted ? 'Quota exhausted — subscribe' : `${data?.membership?.total_remaining ?? 2} bookings left`)}
-          planName={data?.plan?.name || data?.membership?.plan_name}
-          exhausted={Boolean(data?.membership?.quota_exhausted)}
-          onSubscribe={() => router.push('/profile/recharge')}
-        />
-
-        {/* Recharge Subscription Module */}
-        <PlansCard
-          price={data?.recharge?.price || defaultPlan.price}
-          validityDays={data?.recharge?.validityDays || defaultPlan.validityDays}
-          orderType={data?.recharge?.orderType || data?.membership?.plan_name || defaultPlan.orderType}
-          onRecharge={() => router.push('/profile/recharge')}
-        />
 
       </main>
 

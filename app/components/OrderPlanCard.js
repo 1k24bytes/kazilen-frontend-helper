@@ -42,13 +42,13 @@ export default function OrderPlanCard({
         <div className="flex items-center justify-between gap-3 p-3 rounded-sm bg-red-50 border border-red-200">
           <p className="text-xs font-semibold text-red-700 flex items-center gap-1.5">
             <AlertCircle size={14} />
-            <span>Booking limit reached. Subscribe to accept more jobs.</span>
+            <span>Booking limit reached. View plans to continue accepting jobs.</span>
           </p>
           <button
             onClick={onSubscribe}
-            className="px-3.5 py-1.5 rounded-sm bg-[#ff8a4c] hover:bg-[#f07432] text-white text-xs font-bold transition shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-sm bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shrink-0 cursor-pointer"
           >
-            Subscribe
+            View plans
           </button>
         </div>
       )}

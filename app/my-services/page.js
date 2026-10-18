@@ -171,7 +171,8 @@ export default function MyServicesPage() {
                   price: priceVal,
                   price_per_hour: type === 'hourly' ? priceVal : (item.price_per_hour || 199),
                   fixed_price: type === 'fixed' ? priceVal : (item.fixed_price || item.price_per_day || 249),
-                  description: item.description || state[item.id]?.description || ''
+                  description: item.description || state[item.id]?.description || '',
+                  price_locked: !!item.price_locked
                 }
               }
             })
@@ -210,6 +211,7 @@ export default function MyServicesPage() {
   const saveModalDetails = () => {
     if (!editingService) return
 
+    const prevLocked = servicesState[editingService.id]?.price_locked
     const isHourly = modalFormData.price_type === 'hourly'
     const priceVal = Number(modalFormData.price) || (isHourly ? 199 : 249)
 
@@ -217,11 +219,12 @@ export default function MyServicesPage() {
       ...prev,
       [editingService.id]: {
         enabled: true,
-        price_type: modalFormData.price_type,
-        price: priceVal,
+        price_type: prevLocked ? (prev[editingService.id]?.price_type || modalFormData.price_type) : modalFormData.price_type,
+        price: prevLocked ? (prev[editingService.id]?.price || priceVal) : priceVal,
         price_per_hour: isHourly ? priceVal : (prev[editingService.id]?.price_per_hour || 199),
         fixed_price: !isHourly ? priceVal : (prev[editingService.id]?.fixed_price || 249),
-        description: modalFormData.description || ''
+        description: modalFormData.description || '',
+        price_locked: !!prevLocked
       }
     }))
     setEditingService(null)
@@ -402,8 +405,15 @@ export default function MyServicesPage() {
 
                     <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                       {isListed ? (
-                        <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-sm border border-emerald-200 text-[11px]">
-                          <Check size={12} /> ₹{displayPrice} {isHourly ? '/ hr' : 'Fixed Job'}
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-sm border border-emerald-200 text-[11px]">
+                            <Check size={12} /> ₹{displayPrice} {isHourly ? '/ hr' : 'Fixed Job'}
+                          </span>
+                          {current.price_locked ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200">
+                              Locked by admin
+                            </span>
+                          ) : null}
                         </span>
                       ) : (
                         <span className="text-slate-400 text-[11px]">Not Listed</span>

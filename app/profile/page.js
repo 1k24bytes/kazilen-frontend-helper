@@ -27,7 +27,7 @@ import { API_BASE_URL, apiFetch } from '@/lib/api'
 export default function ProfilePage() {
   const router = useRouter()
   const [workerProfile, setWorkerProfile] = useState({ full_name: '', phone_number: '' })
-  const [referral, setReferral] = useState({ code: '', points: 0 })
+  const [referral, setReferral] = useState({ code: '', points: 0, earnings: 0 })
   const [copied, setCopied] = useState(false)
   const [workerLocation, setWorkerLocation] = useState('')
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false)
@@ -62,7 +62,7 @@ export default function ProfilePage() {
           setProfilePhoto(data.profile_photo || '')
           if (data.full_name) localStorage.setItem('kazilen_professional_name', data.full_name)
           if (data.phone_number) localStorage.setItem('user_phone', data.phone_number)
-          setReferral({ code: data.referral_code || '', points: data.referral_points || 0 })
+          setReferral({ code: data.referral_code || '', points: data.referral_points || 0, earnings: data.referral_earnings || 0 })
           if (data.location && data.location.area) {
             const locStr = `${data.location.area}, ${data.location.city || 'Nagpur'}`
             setWorkerLocation(locStr)
@@ -216,13 +216,13 @@ export default function ProfilePage() {
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Partner Referral Program</h3>
                 <p className="text-xs text-slate-500 mt-1 max-w-md">
-                  Invite fellow specialists to join Kazilen. Earn 1 referral point whenever a new partner registers with your code.
+                  Invite fellow specialists to join Kazilen. Earn points + ₹ rewards whenever a new partner registers with your code.
                 </p>
               </div>
             </div>
             <div className="text-right shrink-0">
               <p className="text-lg font-bold text-slate-900">{referral.points}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Points</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Points · ₹{referral.earnings || 0}</p>
             </div>
           </div>
 

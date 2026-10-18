@@ -102,7 +102,14 @@ export default function RechargePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {plans.filter((p) => p.is_active !== false).map((plan) => {
+            {plans
+              .filter((p) => p.is_active !== false)
+              .sort((a, b) => {
+                const aCurrent = quota?.subscribed && quota?.subscription?.plan_id === a.id ? 0 : 1
+                const bCurrent = quota?.subscribed && quota?.subscription?.plan_id === b.id ? 0 : 1
+                return aCurrent - bCurrent
+              })
+              .map((plan) => {
               const isCurrent = quota?.subscribed && quota?.subscription?.plan_id === plan.id
               return (
                 <div key={plan.id} className={`bg-white rounded-md border p-5 shadow-2xs space-y-3 ${isCurrent ? 'border-emerald-300' : 'border-slate-200'}`}>
